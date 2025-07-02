@@ -9,7 +9,7 @@ from textual.widgets import Label
 __all__ = ["QuitModalScreen"]
 
 
-class QuitModalScreen(ModalScreen):
+class QuitModalScreen(ModalScreen[bool]):
     """Screen with a dialog to quit."""
 
     def compose(self) -> ComposeResult:
