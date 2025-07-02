@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Application for visualising and analysing Monzo data"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["typer>=0.16.0"]
+dependencies = ["monzo-py", "textual[syntax]>=3.5.0"]
 
 [project.scripts]
 monzo = "monzo_cli.main:app"
@@ -23,8 +23,11 @@ venv = ".venv"
 [tool.uv]
 package = true
 
+[tool.uv.sources]
+monzo-py = { git = "https://github.com/robfs/monzo-py.git" }
+
 [dependency-groups]
-dev = ["ruff>=0.12.1"]
+dev = ["ruff>=0.12.1", "textual-dev>=1.7.0"]
 
 [tool.ruff]
 # Exclude a variety of commonly ignored directories.
