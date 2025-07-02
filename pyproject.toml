@@ -7,14 +7,14 @@ requires-python = ">=3.13"
 dependencies = ["monzo-py", "textual[syntax]>=3.5.0"]
 
 [project.scripts]
-monzo = "monzo_cli.main:app"
+monzo = "monzo_tui:main"
 
 [build-system]
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
-packages = ["src/monzo_cli"]
+packages = ["src/monzo_tui"]
 
 [tool.pyright]
 venvPath = "."
@@ -84,7 +84,9 @@ select = [
     "SIM", # flake8-simplify
     "RUF", # Ruff-specific rules
 ]
-ignore = []
+ignore = [
+    "RUF012", # textual.app.App class variables are typed as a lists / etc.
+]
 
 # Allow fix for all enabled rules (when `--fix`) is provided.
 fixable = ["ALL"]
