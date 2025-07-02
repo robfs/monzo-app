@@ -1,100 +1,15 @@
 """This is the main Monzo Textual app."""
 
-from time import monotonic
 
 from textual.app import App
 from textual.app import ComposeResult
-from textual.containers import Grid
-from textual.containers import HorizontalGroup
 from textual.containers import VerticalScroll
 from textual.reactive import Reactive
-from textual.reactive import reactive
-from textual.screen import ModalScreen
-from textual.widgets import Button
-from textual.widgets import Digits
 from textual.widgets import Footer
 from textual.widgets import Header
-from textual.widgets import Label
 
-
-class QuitScreen(ModalScreen):
-    """Screen with a dialog to quit."""
-
-    def compose(self) -> ComposeResult:
-        yield Grid(
-            Label("Are you sure you want to quit?", id="question"),
-            Button("Quit", variant="error", id="quit"),
-            Button("Cancel", variant="primary", id="cancel"),
-            id="dialog",
-        )
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        if event.button.id == "quit":
-            self.dismiss(True)
-        else:
-            self.dismiss(False)
-
-
-class TimeDisplay(Digits):
-    """A widget to display elapsed time."""
-
-    start_time = reactive(monotonic)
-    time = reactive(0.0)
-    total = reactive(0.0)
-
-    def on_mount(self) -> None:
-        """Event handler called when diget is added to the app."""
-        self.update_timer = self.set_interval(1 / 60, self.update_time, pause=True)
-
-    def update_time(self) -> None:
-        """Method to update the time to the current time."""
-        self.time = self.total + (monotonic() - self.start_time)
-
-    def watch_time(self, time: float) -> None:
-        """Called when the time attribute changes."""
-        minutes, seconds = divmod(time, 60)
-        hours, minutes = divmod(minutes, 60)
-        self.update(f"{hours:02,.0f}:{minutes:02.0f}:{seconds:05.2f}")
-
-    def start(self) -> None:
-        """Method to start (or resume) time updating."""
-        self.start_time = monotonic()
-        self.update_timer.resume()
-
-    def stop(self) -> None:
-        """Method to stop the time display updating."""
-        self.update_timer.pause()
-        self.total += monotonic() - self.start_time
-        self.time = self.total
-
-    def reset(self) -> None:
-        """Method to reset the time display to zero."""
-        self.total = 0
-        self.time = 0
-
-
-class Stopwatch(HorizontalGroup):
-    """A stopwatch widget."""
-
-    def on_button_pressed(self, event: Button.Pressed) -> None:
-        """Event handler called when a button is pressed."""
-        button_id = event.button.id
-        time_display = self.query_one(TimeDisplay)
-        if button_id == "start":
-            time_display.start()
-            self.add_class("started")
-        elif button_id == "stop":
-            time_display.stop()
-            self.remove_class("started")
-        elif button_id == "reset":
-            time_display.reset()
-
-    def compose(self) -> ComposeResult:
-        """Create child widgets of a stopwatch."""
-        yield Button("Start", id="start", variant="success")
-        yield Button("Stop", id="stop", variant="error")
-        yield Button("Reset", id="reset")
-        yield TimeDisplay()
+from .views import QuitModalScreen
+from .views import Stopwatch
 
 
 class StopwatchApp(App):
@@ -123,7 +38,7 @@ class StopwatchApp(App):
             if quit:
                 self.exit()
 
-        self.push_screen(QuitScreen(), check_quit)
+        self.push_screen(QuitModalScreen(), check_quit)
 
     def action_add_stopwatch(self) -> None:
         """An action to add a timer."""
