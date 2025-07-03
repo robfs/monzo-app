@@ -12,11 +12,16 @@ __all__ = ["QuitModalScreen"]
 class QuitModalScreen(ModalScreen[bool]):
     """Screen with a dialog to quit."""
 
+    BINDINGS = [
+        ("escape", "dismiss(False)", "Cancel"),
+        ("q", "dismiss(True)", "Confirm Quit"),
+    ]
+
     def compose(self) -> ComposeResult:
         yield Grid(
             Label("Are you sure you want to quit?", id="question"),
-            Button("Quit", variant="error", id="quit"),
-            Button("Cancel", variant="primary", id="cancel"),
+            Button("Quit (q)", variant="error", id="quit"),
+            Button("Cancel (esc)", variant="primary", id="cancel"),
             id="dialog",
         )
 
