@@ -2,6 +2,7 @@
 
 from textual.app import App
 from textual.app import ComposeResult
+from textual.reactive import reactive
 from textual.widgets import Footer
 from textual.widgets import Header
 
@@ -22,6 +23,9 @@ class Monzo(App):
         ("s", "open_settings", "Settings"),
     ]
 
+    spreadsheet_id = reactive("")
+    credentials_path = reactive("")
+
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield Header()
@@ -29,6 +33,8 @@ class Monzo(App):
 
     def on_mount(self) -> None:
         self.theme = "catppuccin-latte"
+        if not self.spreadsheet_id:
+            self.action_open_settings()
 
     def action_request_quit(self) -> None:
         """Action to display the quit dialog."""
@@ -42,7 +48,13 @@ class Monzo(App):
 
     def action_open_settings(self) -> None:
         """Action to open the settings screen."""
-        self.push_screen(SettingsScreen())
+
+        def get_settings(settings: tuple[str, str]) -> None:
+            spreadsheet_id, credentials_path = settings
+            self.spreadsheet_id = spreadsheet_id
+            self.credentials_path = credentials_path
+
+        self.push_screen(SettingsScreen(), get_settings)
 
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""
