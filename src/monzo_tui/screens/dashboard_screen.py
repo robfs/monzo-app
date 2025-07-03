@@ -5,12 +5,14 @@ from textual.containers import Container
 from textual.screen import Screen
 from textual.widgets import Label, Header, Footer
 
+from ..views import TransactionsTable
+
 
 class DashboardScreen(Screen):
     """The main dashboard screen."""
 
     def compose(self) -> ComposeResult:
-        grid = Container(Label("Welcome to the Dashboard"))
+        grid = Container(TransactionsTable())
         grid.border_title = "Dashboard"
         grid.border_subtitle = "Dashboard of headline analysis."
         yield Footer()

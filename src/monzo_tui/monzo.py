@@ -4,7 +4,6 @@ import os
 import logging
 from pathlib import Path
 
-from monzo_py import MonzoTransactions
 from textual.app import App
 from textual.app import ComposeResult
 from textual.logging import TextualHandler
@@ -12,10 +11,10 @@ from textual.reactive import reactive
 from textual.widgets import Footer
 from textual.widgets import Header
 
-from .views import QuitModalScreen
-from .views import SettingsScreen
-from .views import SettingsErrorScreen
-from .views import DashboardScreen
+from .screens import QuitModalScreen
+from .screens import SettingsScreen
+from .screens import SettingsErrorScreen
+from .screens import DashboardScreen
 
 
 __all__ = ["Monzo"]
@@ -38,7 +37,6 @@ class Monzo(App):
 
     spreadsheet_id = reactive(os.getenv("MONZO_SPREADSHEET_ID", ""))
     credentials_path = reactive(Path().home() / ".monzo" / "credentials.json")
-    transactions: reactive[MonzoTransactions | None] = reactive(None)
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
@@ -49,10 +47,6 @@ class Monzo(App):
         self.check_settings(self.spreadsheet_id, self.credentials_path)
         self.theme = "catppuccin-latte"
         self.push_screen("dashboard")
-
-    def watch_spreadsheet_id(self, spreadsheet_id: str | None) -> None:
-        creds = str(self.credentials_path)
-        self.transactions = MonzoTransactions(spreadsheet_id, credentials_path=creds)
 
     def check_settings(
         self, spreadsheet_id: str | None, credentials_path: Path
