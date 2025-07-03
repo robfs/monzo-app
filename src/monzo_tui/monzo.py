@@ -1,10 +1,8 @@
 """This is the main Monzo Textual app."""
 
-
 from textual.app import App
 from textual.app import ComposeResult
 from textual.containers import VerticalScroll
-from textual.reactive import Reactive
 from textual.widgets import Footer
 from textual.widgets import Header
 
@@ -12,7 +10,10 @@ from .views import QuitModalScreen
 from .views import Stopwatch
 
 
-class StopwatchApp(App):
+__all__ = ["Monzo"]
+
+
+class Monzo(App):
     """A Textual app to manage stopwatches."""
 
     CSS_PATH = "assets/styles.tcss"
@@ -22,13 +23,15 @@ class StopwatchApp(App):
         ("a", "add_stopwatch", "Add"),
         ("r", "remove_stopwatch", "Remove"),
     ]
-    theme = Reactive("textual-light")
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield Header()
         yield Footer()
         yield VerticalScroll(Stopwatch(), Stopwatch(), Stopwatch(), id="timers")
+
+    def on_mount(self) -> None:
+        self.theme = "catppuccin-latte"
 
     def action_request_quit(self) -> None:
         """Action to display the quit dialog."""
@@ -59,4 +62,4 @@ class StopwatchApp(App):
         )
 
 
-app = StopwatchApp()
+app = Monzo()

@@ -1,11 +1,11 @@
 """Monzo TUI app module."""
 
-from .stopwatch_app import StopwatchApp
+from .monzo import Monzo
 
-__all__ = ["StopwatchApp"]
+__all__ = ["Monzo"]
 
 
 def main() -> None:
     """Main entry point for the Monzo TUI application."""
-    app = StopwatchApp()
+    app = Monzo()
     app.run()
