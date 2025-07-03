@@ -15,6 +15,7 @@ from textual.widgets import Header
 from .views import QuitModalScreen
 from .views import SettingsScreen
 from .views import SettingsErrorScreen
+from .views import DashboardScreen
 
 
 __all__ = ["Monzo"]
@@ -30,9 +31,10 @@ class Monzo(App):
     CSS_PATH = "assets/styles.tcss"
     BINDINGS = [
         ("q", "request_quit", "Quit"),
-        ("d", "toggle_dark", "Toggle dark mode"),
+        ("d", "push_screen('dashboard')", "Dashboard"),
         ("s", "open_settings", "Settings"),
     ]
+    SCREENS = {"dashboard": DashboardScreen}
 
     spreadsheet_id = reactive(os.getenv("MONZO_SPREADSHEET_ID", ""))
     credentials_path = reactive(Path().home() / ".monzo" / "credentials.json")
@@ -46,6 +48,7 @@ class Monzo(App):
     def on_mount(self) -> None:
         self.check_settings(self.spreadsheet_id, self.credentials_path)
         self.theme = "catppuccin-latte"
+        self.push_screen("dashboard")
 
     def watch_spreadsheet_id(self, spreadsheet_id: str | None) -> None:
         creds = str(self.credentials_path)

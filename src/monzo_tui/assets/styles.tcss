@@ -15,6 +15,17 @@ ModalScreen Container {
     border-subtitle-style: italic;
 }
 
+Screen Container {
+    border: double $primary;
+    background: $surface;
+
+    border-title-background: $primary-background;
+    border-title-style: bold;
+    border-title-color: $background;
+
+    border-subtitle-style: italic;
+}
+
 QuitModalScreen Container {
     height: 8;
 }
