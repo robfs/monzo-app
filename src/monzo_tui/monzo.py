@@ -2,12 +2,11 @@
 
 from textual.app import App
 from textual.app import ComposeResult
-from textual.containers import VerticalScroll
 from textual.widgets import Footer
 from textual.widgets import Header
 
 from .views import QuitModalScreen
-from .views import Stopwatch
+from .views import SettingsScreen
 
 
 __all__ = ["Monzo"]
@@ -20,15 +19,13 @@ class Monzo(App):
     BINDINGS = [
         ("q", "request_quit", "Quit"),
         ("d", "toggle_dark", "Toggle dark mode"),
-        ("a", "add_stopwatch", "Add"),
-        ("r", "remove_stopwatch", "Remove"),
+        ("s", "open_settings", "Settings"),
     ]
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
         yield Header()
         yield Footer()
-        yield VerticalScroll(Stopwatch(), Stopwatch(), Stopwatch(), id="timers")
 
     def on_mount(self) -> None:
         self.theme = "catppuccin-latte"
@@ -43,17 +40,9 @@ class Monzo(App):
 
         self.push_screen(QuitModalScreen(), check_quit)
 
-    def action_add_stopwatch(self) -> None:
-        """An action to add a timer."""
-        new_stopwatch = Stopwatch()
-        self.query_one("#timers").mount(new_stopwatch)
-        new_stopwatch.scroll_visible()
-
-    def action_remove_stopwatch(self) -> None:
-        """Called to remove a timer."""
-        timers = self.query("Stopwatch")
-        if timers:
-            timers.last().remove()
+    def action_open_settings(self) -> None:
+        """Action to open the settings screen."""
+        self.push_screen(SettingsScreen())
 
     def action_toggle_dark(self) -> None:
         """An action to toggle dark mode."""

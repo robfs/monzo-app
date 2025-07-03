@@ -1,7 +1,6 @@
 """Module containing all views."""
 
 from .quit_modal_screen import QuitModalScreen
-from .stopwatch import Stopwatch
-from .time_display import TimeDisplay
+from .settings_screen import SettingsScreen
 
-__all__ = ["QuitModalScreen", "Stopwatch", "TimeDisplay"]
+__all__ = ["QuitModalScreen", "SettingsScreen"]
