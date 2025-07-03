@@ -1,50 +1,51 @@
-QuitModalScreen {
+ModalScreen {
     align: center middle;
 }
 
-SettingsScreen {
+ModalScreen Container {
+    width: 60;
+
+    border: double $primary;
+    background: $surface;
+
+    border-title-background: $primary-background;
+    border-title-style: bold;
+    border-title-color: $background;
+
+    border-subtitle-style: italic;
+}
+
+QuitModalScreen Container {
+    height: 8;
+}
+
+QuitModalScreen Container Label {
+    height: 1fr;
+    width: 1fr;
+    content-align: center middle;
+}
+
+SettingsScreen Container {
+    height: 15;
+}
+
+SettingsScreen Container Label {
+    margin: 1;
+    text-style: bold;
+}
+
+SettingsErrorScreen {
     align: center middle;
 }
 
-QuitModalScreen Button {
-    width: 100%;
-}
-
-SettingsScreen Button {
-    width: 100%;
-}
-
-QuitModalScreen #dialog {
-    grid-size: 2;
-    grid-gutter: 1 2;
-    grid-rows: 1fr 3;
+SettingsErrorScreen Container {
     padding: 0 1;
-    width: 60;
-    height: 11;
-    border: double $background 80%;
-    background: $surface;
+    height: 10;
+    width: 50;
+    content-align: center middle;
 }
 
-SettingsScreen #settings-grid {
-    grid-size: 2;
-    grid-gutter: 1;
-    padding: 0 1;
-    width: 60;
-    height: 16;
-    border: double $background 80%;
-    background: $surface;
-}
-
-SpreadsheetIdInput {
-    column-span: 2;
-}
-
-CredentialsPathInput {
-    column-span: 2;
-}
-
-QuitModalScreen #question {
-    column-span: 2;
+SettingsErrorScreen Container Label {
     height: 1fr;
     width: 1fr;
     content-align: center middle;
