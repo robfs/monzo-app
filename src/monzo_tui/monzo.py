@@ -4,12 +4,16 @@ import os
 import logging
 from pathlib import Path
 
+from duckdb import DuckDBPyConnection
+
 from textual.app import App
 from textual.app import ComposeResult
 from textual.logging import TextualHandler
 from textual.reactive import reactive
 from textual.widgets import Footer
 from textual.widgets import Header
+
+from monzo_py import MonzoTransactions
 
 from .screens import QuitModalScreen
 from .screens import SettingsScreen
@@ -37,6 +41,8 @@ class Monzo(App):
 
     spreadsheet_id = reactive(os.getenv("MONZO_SPREADSHEET_ID", ""))
     credentials_path = reactive(Path().home() / ".monzo" / "credentials.json")
+    monzo_transactions: reactive[MonzoTransactions | None] = reactive(None)
+    db_connection: reactive[DuckDBPyConnection | None] = reactive(None)
 
     def compose(self) -> ComposeResult:
         """Create child widgets for the app."""
