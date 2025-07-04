@@ -3,6 +3,7 @@
 import os
 import logging
 from pathlib import Path
+from contextlib import contextmanager
 
 from duckdb import DuckDBPyConnection
 
@@ -54,6 +55,18 @@ class Monzo(App):
         self.check_settings(self.spreadsheet_id, self.credentials_path)
         self.theme = "catppuccin-latte"
         self.push_screen("dashboard")
+
+    def watch_spreadsheet_id(self, new_spreadsheet_id: str) -> None:
+        """Watch for changes to spreadsheet_id and reinitialize MonzoTransactions."""
+        logger.info(f"Spreadsheet ID changed to: {new_spreadsheet_id}")
+        if new_spreadsheet_id and self.credentials_path.exists():
+            self.get_transactions(new_spreadsheet_id, self.credentials_path)
+
+    def watch_credentials_path(self, new_credentials_path: Path) -> None:
+        """Watch for changes to credentials_path and reinitialize MonzoTransactions."""
+        logger.info(f"Credentials path changed to: {new_credentials_path}")
+        if self.spreadsheet_id and new_credentials_path.exists():
+            self.get_transactions(self.spreadsheet_id, new_credentials_path)
 
     def get_transactions(self, spreadsheet_id: str, credentials_path: Path) -> None:
         """Initialize MonzoTransactions with the given spreadsheet ID."""
@@ -122,15 +135,20 @@ class Monzo(App):
             SettingsScreen(self.spreadsheet_id, self.credentials_path), save_settings
         )
 
+    @contextmanager
     def get_db_connection(self):
         """Get the DuckDB connection for views to query data."""
         if not self.monzo_transactions:
             logger.error("MonzoTransactions not initialized.")
+            yield None
             return
 
         db_conn = self.monzo_transactions.duck_db()
-        yield db_conn
-        db_conn.close()
+        try:
+            yield db_conn
+        finally:
+            logger.info("Closing DuckDB connection...")
+            db_conn.close()
 
 
 app = Monzo()

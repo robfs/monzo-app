@@ -61,3 +61,11 @@ SettingsErrorScreen Container Label {
     width: 1fr;
     content-align: center middle;
 }
+
+Static {
+    border: round $primary;
+}
+
+DataTable {
+    border: round $primary;
+}
