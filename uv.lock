@@ -507,6 +507,7 @@ name = "monzo-app"
 version = "0.1.0"
 source = { editable = "." }
 dependencies = [
+    { name = "duckdb" },
     { name = "monzo-py" },
     { name = "textual", extra = ["syntax"] },
 ]
@@ -519,6 +520,7 @@ dev = [
 
 [package.metadata]
 requires-dist = [
+    { name = "duckdb" },
     { name = "monzo-py", git = "https://github.com/robfs/monzo-py.git" },
     { name = "textual", extras = ["syntax"], specifier = ">=3.5.0" },
 ]
