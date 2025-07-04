@@ -4,7 +4,12 @@ version = "0.1.0"
 description = "Application for visualising and analysing Monzo data"
 readme = "README.md"
 requires-python = ">=3.13"
-dependencies = ["monzo-py", "textual[syntax]>=3.5.0", "duckdb"]
+dependencies = [
+    "monzo-py",
+    "textual[syntax]>=3.5.0",
+    "duckdb",
+    "textual-plotext>=1.0.1",
+]
 
 [project.scripts]
 monzo = "monzo_tui:main"
