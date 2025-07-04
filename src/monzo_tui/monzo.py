@@ -9,6 +9,7 @@ from duckdb import DuckDBPyConnection
 from textual.app import App
 from textual.app import ComposeResult
 from textual.logging import TextualHandler
+from textual.message import Message
 from textual.reactive import reactive
 from textual.widgets import Footer
 from textual.widgets import Header
@@ -57,15 +58,10 @@ class Monzo(App):
     def get_transactions(self, spreadsheet_id: str, credentials_path: Path) -> None:
         """Initialize MonzoTransactions with the given spreadsheet ID."""
         try:
-            # Clean up existing connection
-            self._cleanup_connections()
-            self.monzo_transactions = MonzoTransactions(
-                spreadsheet_id, credentials_path=str(credentials_path)
-            )
-
-            # Get DuckDB connection
-            self.db_connection = self.monzo_transactions.duck_db()
-
+            creds = str(credentials_path)
+            transactions = MonzoTransactions(spreadsheet_id, credentials_path=creds)
+            self.monzo_transactions = transactions
+            self.monzo_transactions.fetch_data()
             # Notify screens that data is available
             self.post_message(self.MonzoTransactionsInitialized())
 
@@ -94,6 +90,7 @@ class Monzo(App):
                 SettingsErrorScreen("Credentials path must link to a valid file.")
             )
             return False
+
         return True
 
     def action_request_quit(self) -> None:
@@ -125,16 +122,15 @@ class Monzo(App):
             SettingsScreen(self.spreadsheet_id, self.credentials_path), save_settings
         )
 
-    def _cleanup_connections(self) -> None:
-        """Clean up database connections."""
-        if self.db_connection:
-            try:
-                self.db_connection.close()
-                logger.info("Database connection closed")
-            except Exception as e:
-                logger.warning(f"Error closing database connection: {e}")
-            finally:
-                self.db_connection = None
+    def get_db_connection(self):
+        """Get the DuckDB connection for views to query data."""
+        if not self.monzo_transactions:
+            logger.error("MonzoTransactions not initialized.")
+            return
+
+        db_conn = self.monzo_transactions.duck_db()
+        yield db_conn
+        db_conn.close()
 
 
 app = Monzo()
