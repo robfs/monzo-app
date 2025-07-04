@@ -26,12 +26,15 @@ class TransactionsTable(DataTable, DataView):
         currency
     FROM transactions
     ORDER BY date DESC, time DESC
+    LIMIT 10
     """
     _columns_names = ["Date", "Time", "Name", "Category", "Amount"]
     data: reactive[list[tuple]] = reactive([])
 
     def on_mount(self) -> None:
         self.border_title = "Latest Transactions"
+        self.cursor_type = "row"
+        self.zebra_stripes = True
 
     def watch_data(self) -> None:
         """Load transaction data from the app's DuckDB connection."""

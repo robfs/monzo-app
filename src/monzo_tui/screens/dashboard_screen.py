@@ -1,13 +1,15 @@
 """Module containing the DashboardScreen class."""
 
 import logging
+
 from textual import work
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.reactive import reactive
 from textual.screen import Screen
-from textual.widgets import Header, Footer
-from textual.worker import Worker, get_current_worker
+from textual.widgets import Footer
+from textual.widgets import Header
+from textual.worker import get_current_worker
 
 from ..views import TransactionsTable
 

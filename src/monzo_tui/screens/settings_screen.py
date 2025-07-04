@@ -4,13 +4,15 @@ import logging
 from pathlib import Path
 
 from textual.app import ComposeResult
-from textual.screen import ModalScreen
-from textual.widgets import Input, Label, Static, Footer
 from textual.containers import Container
 from textual.events import Key
+from textual.screen import ModalScreen
+from textual.widgets import Footer
+from textual.widgets import Input
+from textual.widgets import Label
+from textual.widgets import Static
 
-
-__all__ = ["SettingsScreen", "SettingsErrorScreen"]
+__all__ = ["SettingsErrorScreen", "SettingsScreen"]
 
 logger = logging.getLogger(__name__)
 

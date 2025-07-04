@@ -2,8 +2,8 @@
 
 import logging
 
-from textual.widget import Widget
 from textual.reactive import reactive
+from textual.widget import Widget
 
 __all__ = ["DataView"]
 

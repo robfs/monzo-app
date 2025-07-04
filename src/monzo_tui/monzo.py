@@ -1,12 +1,12 @@
 """This is the main Monzo Textual app."""
 
-import os
 import logging
-from pathlib import Path
+import os
 from contextlib import contextmanager
+from pathlib import Path
 
 from duckdb import DuckDBPyConnection
-
+from monzo_py import MonzoTransactions
 from textual import work
 from textual.app import App
 from textual.app import ComposeResult
@@ -15,15 +15,13 @@ from textual.message import Message
 from textual.reactive import reactive
 from textual.widgets import Footer
 from textual.widgets import Header
-from textual.worker import Worker, get_current_worker
+from textual.worker import Worker
+from textual.worker import get_current_worker
 
-from monzo_py import MonzoTransactions
-
-from .screens import QuitModalScreen
-from .screens import SettingsScreen
-from .screens import SettingsErrorScreen
 from .screens import DashboardScreen
-
+from .screens import QuitModalScreen
+from .screens import SettingsErrorScreen
+from .screens import SettingsScreen
 
 __all__ = ["Monzo"]
 
@@ -109,7 +107,6 @@ class Monzo(App):
     class MonzoTransactionsInitialized(Message):
         """Message sent when MonzoTransactions is successfully initialized."""
 
-        pass
 
     def check_settings(
         self, spreadsheet_id: str | None, credentials_path: Path
