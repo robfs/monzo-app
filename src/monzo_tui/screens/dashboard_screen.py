@@ -1,13 +1,17 @@
 """Module containing the DashboardScreen class."""
 
+import logging
+from textual import work
 from textual.app import ComposeResult
 from textual.containers import Container
-from textual.message import Message
 from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Header, Footer
+from textual.worker import Worker, get_current_worker
 
 from ..views import TransactionsTable
+
+logger = logging.getLogger(__name__)
 
 
 class DashboardScreen(Screen):
@@ -23,11 +27,10 @@ class DashboardScreen(Screen):
         yield Header()
         yield grid
 
-    def on_message(self, message: Message) -> None:
-        """Handle messages from the app."""
-        if (
-            hasattr(message, "__class__")
-            and message.__class__.__name__ == "MonzoTransactionsInitialized"
-            and self.transactions_table
-        ):
+    @work(exclusive=True, thread=True)
+    def on_monzo_monzo_transactions_initialized(self, message) -> None:
+        """Handle MonzoTransactionsInitialized message."""
+        worker = get_current_worker()
+        if not worker.is_cancelled:
+            logger.info("Refreshing Dashboard data.")
             self.transactions_table.refresh_data()

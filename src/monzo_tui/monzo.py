@@ -7,6 +7,7 @@ from contextlib import contextmanager
 
 from duckdb import DuckDBPyConnection
 
+from textual import work
 from textual.app import App
 from textual.app import ComposeResult
 from textual.logging import TextualHandler
@@ -14,6 +15,7 @@ from textual.message import Message
 from textual.reactive import reactive
 from textual.widgets import Footer
 from textual.widgets import Header
+from textual.worker import Worker, get_current_worker
 
 from monzo_py import MonzoTransactions
 
@@ -68,19 +70,41 @@ class Monzo(App):
         if self.spreadsheet_id and new_credentials_path.exists():
             self.get_transactions(self.spreadsheet_id, new_credentials_path)
 
+    @work(exclusive=True, thread=True)
     def get_transactions(self, spreadsheet_id: str, credentials_path: Path) -> None:
         """Initialize MonzoTransactions with the given spreadsheet ID."""
+        worker = get_current_worker()
         try:
             creds = str(credentials_path)
             transactions = MonzoTransactions(spreadsheet_id, credentials_path=creds)
-            self.monzo_transactions = transactions
-            self.monzo_transactions.fetch_data()
-            # Notify screens that data is available
-            self.post_message(self.MonzoTransactionsInitialized())
+
+            if not worker.is_cancelled:
+                # This runs in the background thread - good for slow operations
+                transactions.fetch_data()
+
+                # Safely update the reactive attribute from the background thread
+                self.call_from_thread(setattr, self, "monzo_transactions", transactions)
+
+                # Notify dashboard screen directly that data is available
+                logger.info(
+                    "Posting MonzoTransactionsInitialized message to dashboard screen"
+                )
+                # self.call_from_thread(self._post_message_to_dashboard)
+                # self._post_message_to_dashboard()
+                for screen in self.screen_stack:
+                    screen.post_message(self.MonzoTransactionsInitialized())
 
         except Exception as e:
             logger.error(f"Failed to initialize MonzoTransactions: {e}")
-            self.push_screen(SettingsErrorScreen("Failed to load transaction data."))
+            # Use call_from_thread to safely push screen from background thread
+            self.call_from_thread(
+                self.push_screen,
+                SettingsErrorScreen("Failed to load transaction data."),
+            )
+
+    def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
+        """Called when the worker state changes."""
+        self.log(event)
 
     class MonzoTransactionsInitialized(Message):
         """Message sent when MonzoTransactions is successfully initialized."""
@@ -147,7 +171,6 @@ class Monzo(App):
         try:
             yield db_conn
         finally:
-            logger.info("Closing DuckDB connection...")
             db_conn.close()
 
 
