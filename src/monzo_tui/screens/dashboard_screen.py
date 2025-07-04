@@ -11,8 +11,8 @@ from textual.widgets import Footer
 from textual.widgets import Header
 from textual.worker import get_current_worker
 
-
-from ..views import TransactionsTable, Balance
+from ..views import Balance
+from ..views import TransactionsTable
 
 logger = logging.getLogger(__name__)
 

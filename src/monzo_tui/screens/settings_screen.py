@@ -10,7 +10,6 @@ from textual.screen import ModalScreen
 from textual.widgets import Footer
 from textual.widgets import Input
 from textual.widgets import Label
-from textual.widgets import Static
 
 __all__ = ["SettingsErrorScreen", "SettingsScreen"]
 
