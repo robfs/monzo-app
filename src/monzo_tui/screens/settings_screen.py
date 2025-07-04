@@ -17,28 +17,18 @@ __all__ = ["SettingsErrorScreen", "SettingsScreen"]
 logger = logging.getLogger(__name__)
 
 
-class SpreadsheetIdInput(Static):
+class SpreadsheetIdInput(Input):
     """Input field for the spreadsheet ID."""
 
-    def __init__(self, spreadsheet_id: str, *args, **kwargs):
-        self.spreadsheet_id = spreadsheet_id
-        super().__init__(*args, **kwargs)
-
-    def compose(self) -> ComposeResult:
-        yield Label("Spreadsheet ID")
-        yield Input(value=self.spreadsheet_id, id="spreadsheet_id")
+    def on_mount(self) -> None:
+        self.border_title = "Spreadsheet ID"
 
 
-class CredentialsPathInput(Static):
+class CredentialsPathInput(Input):
     """Input field for the credentials path."""
 
-    def __init__(self, credentials_path: Path, *args, **kwargs):
-        self.credentials_path = credentials_path
-        super().__init__(*args, **kwargs)
-
-    def compose(self) -> ComposeResult:
-        yield Label("Credentials Path")
-        yield Input(value=str(self.credentials_path), id="credentials_path")
+    def on_mount(self) -> None:
+        self.border_title = "Credentials Path"
 
 
 class SettingsErrorScreen(ModalScreen):
@@ -60,18 +50,21 @@ class SettingsErrorScreen(ModalScreen):
 class SettingsScreen(ModalScreen[tuple[bool, str, Path]]):
     """Settings screen for the Monzo TUI."""
 
-    BINDINGS = [("escape", "cancel", "Cancel"), ("enter", "save", "Save")]
+    BINDINGS = [("escape", "cancel", "Cancel")]
 
     def __init__(self, spreadsheet_id: str, credentials_path: Path, *args, **kwargs):
         self.spreadsheet_id = spreadsheet_id
         self.credentials_path = credentials_path
         super().__init__(*args, **kwargs)
 
+    @property
+    def credentials_string(self) -> str:
+        return str(self.credentials_path)
+
     def compose(self) -> ComposeResult:
         container = Container(
             SpreadsheetIdInput(self.spreadsheet_id),
-            CredentialsPathInput(self.credentials_path),
-            id="settings-grid",
+            CredentialsPathInput(self.credentials_string),
         )
         container.border_title = "Settings"
         container.border_subtitle = "Press 'Enter' to save, 'Esc' to cancel"
@@ -79,10 +72,10 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path]]):
         yield container
 
     def get_spreadsheet_id(self) -> str:
-        return self.query_one("#spreadsheet_id", Input).value
+        return self.query_one(SpreadsheetIdInput).value
 
     def get_credentials_path(self) -> Path:
-        return Path(self.query_one("#credentials_path", Input).value).expanduser()
+        return Path(self.query_one(CredentialsPathInput).value).expanduser()
 
     def action_cancel(self) -> None:
         """Cancel action triggered by ESC key."""
@@ -97,9 +90,5 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path]]):
     def on_key(self, event: Key) -> None:
         """Handle key events, specifically Enter key when inputs are focused."""
         if event.key == "enter":
-            # Check if either input is focused
-            focused_widget = self.focused
-            if focused_widget and isinstance(focused_widget, Input):
-                # If an input is focused, trigger save action
-                self.action_save()
-                event.prevent_default()
+            self.action_save()
+            event.prevent_default()

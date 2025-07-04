@@ -79,6 +79,7 @@ class Monzo(App):
             if not worker.is_cancelled:
                 # This runs in the background thread - good for slow operations
                 transactions.fetch_data()
+                self.notify("Monzo data updated.", title="Refresh Complete", timeout=3)
 
                 # Safely update the reactive attribute from the background thread
                 self.call_from_thread(setattr, self, "monzo_transactions", transactions)
@@ -96,8 +97,11 @@ class Monzo(App):
             logger.error(f"Failed to initialize MonzoTransactions: {e}")
             # Use call_from_thread to safely push screen from background thread
             self.call_from_thread(
-                self.push_screen,
-                SettingsErrorScreen("Failed to load transaction data."),
+                self.notify,
+                "Failed to load transaction data.",
+                title="Data Fetch Error",
+                severity="error",
+                timeout=5,
             )
 
     def on_worker_state_changed(self, event: Worker.StateChanged) -> None:
@@ -106,7 +110,6 @@ class Monzo(App):
 
     class MonzoTransactionsInitialized(Message):
         """Message sent when MonzoTransactions is successfully initialized."""
-
 
     def check_settings(
         self, spreadsheet_id: str | None, credentials_path: Path
@@ -148,6 +151,10 @@ class Monzo(App):
                 if valid:
                     self.spreadsheet_id = spreadsheet_id
                     self.credentials_path = credentials_path
+                    self.notify(
+                        f"Spreadsheet ID: {spreadsheet_id}\nCredentials Path: {credentials_path}",
+                        title="Settings Updated",
+                    )
             else:
                 logger.info("Settings not saved.")
                 self.check_settings(self.spreadsheet_id, self.credentials_path)
