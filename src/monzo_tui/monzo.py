@@ -95,13 +95,6 @@ class Monzo(App):
             SettingsScreen(self.spreadsheet_id, self.credentials_path), save_settings
         )
 
-    def action_toggle_dark(self) -> None:
-        """An action to toggle dark mode."""
-        self.theme = (
-            "catppuccin-mocha"
-            if self.theme == "catppuccin-latte"
-            else "catppuccin-latte"
-        )
 
 
 app = Monzo()
