@@ -11,7 +11,8 @@ from textual.widgets import Footer
 from textual.widgets import Header
 from textual.worker import get_current_worker
 
-from ..views import TransactionsTable
+
+from ..views import TransactionsTable, Balance
 
 logger = logging.getLogger(__name__)
 
@@ -20,9 +21,10 @@ class DashboardScreen(Screen):
     """The main dashboard screen."""
 
     transactions_table: reactive[TransactionsTable] = reactive(TransactionsTable())
+    balance: reactive[Balance] = reactive(Balance())
 
     def compose(self) -> ComposeResult:
-        grid = Container(self.transactions_table)
+        grid = Container(self.balance, self.transactions_table)
         grid.border_title = "Dashboard"
         grid.border_subtitle = "Dashboard of headline analysis."
         yield Footer()
@@ -36,3 +38,4 @@ class DashboardScreen(Screen):
         if not worker.is_cancelled:
             logger.info("Refreshing Dashboard data.")
             self.transactions_table.refresh_data()
+            self.balance.refresh_data()

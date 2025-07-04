@@ -40,9 +40,13 @@ SettingsScreen Container {
     height: 15;
 }
 
-SettingsScreen Container Label {
+SettingsScreen Input {
+    border: round $primary;
+    border-title-style: bold;
+    padding: 1 2;
     margin: 1;
-    text-style: bold;
+    height: 5;
+
 }
 
 SettingsErrorScreen {
@@ -68,4 +72,13 @@ Static {
 
 DataTable {
     border: round $primary;
+}
+
+Balance {
+    border: round $primary;
+    width: 20;
+}
+
+ToastRack {
+    align: right top;
 }
