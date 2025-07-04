@@ -54,6 +54,30 @@ class Monzo(App):
         self.theme = "catppuccin-latte"
         self.push_screen("dashboard")
 
+    def get_transactions(self, spreadsheet_id: str, credentials_path: Path) -> None:
+        """Initialize MonzoTransactions with the given spreadsheet ID."""
+        try:
+            # Clean up existing connection
+            self._cleanup_connections()
+            self.monzo_transactions = MonzoTransactions(
+                spreadsheet_id, credentials_path=str(credentials_path)
+            )
+
+            # Get DuckDB connection
+            self.db_connection = self.monzo_transactions.duck_db()
+
+            # Notify screens that data is available
+            self.post_message(self.MonzoTransactionsInitialized())
+
+        except Exception as e:
+            logger.error(f"Failed to initialize MonzoTransactions: {e}")
+            self.push_screen(SettingsErrorScreen("Failed to load transaction data."))
+
+    class MonzoTransactionsInitialized(Message):
+        """Message sent when MonzoTransactions is successfully initialized."""
+
+        pass
+
     def check_settings(
         self, spreadsheet_id: str | None, credentials_path: Path
     ) -> bool:
@@ -101,6 +125,16 @@ class Monzo(App):
             SettingsScreen(self.spreadsheet_id, self.credentials_path), save_settings
         )
 
+    def _cleanup_connections(self) -> None:
+        """Clean up database connections."""
+        if self.db_connection:
+            try:
+                self.db_connection.close()
+                logger.info("Database connection closed")
+            except Exception as e:
+                logger.warning(f"Error closing database connection: {e}")
+            finally:
+                self.db_connection = None
 
 
 app = Monzo()
