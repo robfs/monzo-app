@@ -35,9 +35,10 @@ class Monzo(App):
 
     CSS_PATH = "assets/styles.tcss"
     BINDINGS = [
-        ("q", "request_quit", "Quit"),
         ("d", "push_screen('dashboard')", "Dashboard"),
+        ("R", "get_transactions", "Refresh"),
         ("s", "open_settings", "Settings"),
+        ("q", "request_quit", "Quit"),
     ]
     SCREENS = {"dashboard": DashboardScreen}
 
@@ -60,18 +61,21 @@ class Monzo(App):
         """Watch for changes to spreadsheet_id and reinitialize MonzoTransactions."""
         logger.info(f"Spreadsheet ID changed to: {new_spreadsheet_id}")
         if new_spreadsheet_id and self.credentials_path.exists():
-            self.get_transactions(new_spreadsheet_id, self.credentials_path)
+            self.get_transactions()
 
     def watch_credentials_path(self, new_credentials_path: Path) -> None:
         """Watch for changes to credentials_path and reinitialize MonzoTransactions."""
         logger.info(f"Credentials path changed to: {new_credentials_path}")
         if self.spreadsheet_id and new_credentials_path.exists():
-            self.get_transactions(self.spreadsheet_id, new_credentials_path)
+            self.get_transactions()
 
     @work(exclusive=True, thread=True)
-    def get_transactions(self, spreadsheet_id: str, credentials_path: Path) -> None:
+    def get_transactions(self) -> None:
         """Initialize MonzoTransactions with the given spreadsheet ID."""
+        self.notify("Refreshing Monzo data...", severity="warning")
         worker = get_current_worker()
+        spreadsheet_id = self.spreadsheet_id
+        credentials_path = self.credentials_path
         try:
             creds = str(credentials_path)
             transactions = MonzoTransactions(spreadsheet_id, credentials_path=creds)
@@ -162,6 +166,10 @@ class Monzo(App):
         self.push_screen(
             SettingsScreen(self.spreadsheet_id, self.credentials_path), save_settings
         )
+
+    def action_get_transactions(self) -> None:
+        """Action to refresh transactions data."""
+        self.get_transactions()
 
     @contextmanager
     def get_db_connection(self):
