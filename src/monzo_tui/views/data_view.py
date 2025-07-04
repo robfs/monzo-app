@@ -3,14 +3,13 @@
 import logging
 
 from textual.reactive import reactive
-from textual.widget import Widget
 
 __all__ = ["DataView"]
 
 logger = logging.getLogger(__name__)
 
 
-class DataView(Widget):
+class DataView:
     """An abstract data view for processing transaction data."""
 
     sql_query: str = "SELECT 1 from transactions"

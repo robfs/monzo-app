@@ -36,14 +36,14 @@ class TransactionsTable(DataTable, DataView):
         self.cursor_type = "row"
         self.zebra_stripes = True
 
-    def watch_data(self) -> None:
+    def watch_data(self, data: list[tuple]) -> None:
         """Load transaction data from the app's DuckDB connection."""
         # Clear existing data
         self.clear(columns=True)
         self.add_columns(*self.column_names())
 
         # Add rows to the table
-        for transaction in self.data:
+        for transaction in data:
             # Format the amount with currency symbol
             amount_str = self._format_amount(
                 transaction[4],
@@ -58,7 +58,7 @@ class TransactionsTable(DataTable, DataView):
                 amount_str,
             )
 
-        logger.info(f"Loaded {len(self.data)} transactions into table")
+        logger.info(f"Loaded {len(data)} transactions into table")
 
     def _format_amount(self, amount: float, currency: str) -> str:
         """Format amount with appropriate currency symbol and color."""
