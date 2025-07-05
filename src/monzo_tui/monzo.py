@@ -22,6 +22,7 @@ from .screens import DashboardScreen
 from .screens import QuitModalScreen
 from .screens import SettingsErrorScreen
 from .screens import SettingsScreen
+from .screens import SQLScreen
 
 __all__ = ["Monzo"]
 
@@ -36,11 +37,12 @@ class Monzo(App):
     CSS_PATH = "assets/styles.tcss"
     BINDINGS = [
         ("d", "push_screen('dashboard')", "Dashboard"),
+        ("c", "push_screen('sql')", "Custom SQL"),
         ("R", "get_transactions", "Refresh"),
         ("s", "open_settings", "Settings"),
         ("q", "request_quit", "Quit"),
     ]
-    SCREENS = {"dashboard": DashboardScreen}
+    SCREENS = {"dashboard": DashboardScreen, "sql": SQLScreen}
 
     spreadsheet_id = reactive(os.getenv("MONZO_SPREADSHEET_ID", ""))
     credentials_path = reactive(Path().home() / ".monzo" / "credentials.json")
