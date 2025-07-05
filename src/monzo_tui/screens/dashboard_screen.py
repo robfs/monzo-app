@@ -16,6 +16,7 @@ from ..views import BalanceView
 from ..views import LatestTransactionsView
 from ..views import LogoView
 from ..views import MonthlyChartView
+from ..views import TopMerchantsTableView
 
 logger = logging.getLogger(__name__)
 
@@ -48,13 +49,6 @@ class TopCategoriesTableView(Placeholder):
         self.border_title = "Spending this Month"
 
 
-class TopMerchanatsTableView(Placeholder):
-    """A placeholder widget for the category table."""
-
-    def on_mount(self) -> None:
-        self.border_title = "Top Merchants"
-
-
 class TBCView(Placeholder):
     """A placeholder widget for the TBC."""
 
@@ -73,7 +67,7 @@ class DashboardScreen(Screen):
             PayMonthView("PayMonthView"),
             SpendingLastMonthChartView("CategoryChartView"),
             TopCategoriesTableView("CategoryTableView"),
-            TopMerchanatsTableView("TopMerchantsTableView"),
+            TopMerchantsTableView(),
             DaysLeftView("DaysLeftView"),
             TBCView("TBCView"),
             self.latest_transactions_table(),
@@ -96,6 +90,10 @@ class DashboardScreen(Screen):
     def monthly_chart(self) -> MonthlyChartView:
         return self.query_one(MonthlyChartView)
 
+    @property
+    def top_merchants(self) -> TopMerchantsTableView:
+        return self.query_one(TopMerchantsTableView)
+
     def latest_transactions_table(self):
         return LatestTransactionsView()
 
@@ -115,6 +113,10 @@ class DashboardScreen(Screen):
             self.monthly_chart.update()
         except Exception as e:
             self.app.notify(f"Error refreshing monthly chart: {e}")
+        try:
+            self.top_merchants.refresh_data()
+        except Exception as e:
+            self.app.notify(f"Error refreshing top merchants: {e}")
 
     @work(exclusive=True, thread=True)
     def on_monzo_transactions_initialized(self, message) -> None:

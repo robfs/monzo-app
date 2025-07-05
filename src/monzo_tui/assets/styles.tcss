@@ -74,10 +74,11 @@ DashboardScreen {
             row-span: 5;
         }
 
-        TopMerchanatsTableView {
+        TopMerchantsTableView {
             border: round $primary;
             column-span: 3;
             row-span: 5;
+            height: 100%;
         }
 
         DaysLeftView {
@@ -91,6 +92,7 @@ DashboardScreen {
             column-span: 10;
             row-span: 5;
             border: round $primary;
+            height: 100%;
         }
 
         TBCView {
