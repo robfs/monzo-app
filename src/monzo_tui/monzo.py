@@ -44,6 +44,8 @@ class Monzo(App):
 
     spreadsheet_id = reactive(os.getenv("MONZO_SPREADSHEET_ID", ""))
     credentials_path = reactive(Path().home() / ".monzo" / "credentials.json")
+    pay_day_type = reactive("specific")
+    pay_day = reactive(25)
     monzo_transactions: reactive[MonzoTransactions | None] = reactive(None)
     db_connection: reactive[DuckDBPyConnection | None] = reactive(None)
 
@@ -54,7 +56,7 @@ class Monzo(App):
 
     def on_mount(self) -> None:
         self.check_settings(self.spreadsheet_id, self.credentials_path)
-        self.theme = "catppuccin-latte"
+        self.theme = "nord"
         self.push_screen("dashboard")
 
     def watch_spreadsheet_id(self, new_spreadsheet_id: str) -> None:
@@ -147,16 +149,18 @@ class Monzo(App):
     def action_open_settings(self) -> None:
         """Action to open the settings screen."""
 
-        def save_settings(settings: tuple[bool, str, Path]) -> None:
-            to_save, spreadsheet_id, credentials_path = settings
+        def save_settings(settings: tuple[bool, str, Path, str, int]) -> None:
+            to_save, spreadsheet_id, credentials_path, pay_day_type, pay_day = settings
             if to_save:
                 logger.info("Saving settings...")
                 valid = self.check_settings(spreadsheet_id, credentials_path)
                 if valid:
                     self.spreadsheet_id = spreadsheet_id
                     self.credentials_path = credentials_path
+                    self.pay_day_type = pay_day_type
+                    self.pay_day = pay_day
                     self.notify(
-                        f"Spreadsheet ID: {spreadsheet_id}\nCredentials Path: {credentials_path}",
+                        f"Spreadsheet ID: {spreadsheet_id}\nCredentials Path: {credentials_path}\nPay Day Type: {pay_day_type}\nPay Day: {pay_day}",
                         title="Settings Updated",
                     )
             else:
@@ -164,7 +168,13 @@ class Monzo(App):
                 self.check_settings(self.spreadsheet_id, self.credentials_path)
 
         self.push_screen(
-            SettingsScreen(self.spreadsheet_id, self.credentials_path), save_settings
+            SettingsScreen(
+                self.spreadsheet_id,
+                self.credentials_path,
+                self.pay_day_type,
+                self.pay_day,
+            ),
+            save_settings,
         )
 
     def action_get_transactions(self) -> None:
