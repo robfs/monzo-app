@@ -25,7 +25,7 @@ class DashboardScreen(Screen):
     balance: reactive[Balance] = reactive(Balance())
 
     def compose(self) -> ComposeResult:
-        grid = Container(LogoView(), self.balance, self.transactions_table)
+        grid = Container(LogoView(), self.transactions_table, self.balance)
         grid.border_title = "Dashboard"
         grid.border_subtitle = "Dashboard of headline analysis."
         yield Footer()
