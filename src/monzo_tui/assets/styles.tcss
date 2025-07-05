@@ -29,17 +29,28 @@ DashboardScreen {
 
         layout: grid;
         grid-gutter: 1;
+        grid-size: 12 10;
 
         padding: 1;
 
-        Balance {
-            border: round $primary;
-            width: 23;
-            align-horizontal: right;
+        LogoView {
+            column-span: 2;
+            row-span: 3;
+            margin: 2 0;
         }
 
         DataTable {
+            column-span: 10;
+            row-span: 3;
             border: round $primary;
+        }
+
+        Balance {
+            column-span: 2;
+            row-span: 2;
+            border: round $primary;
+            width: 23;
+            align-horizontal: right;
         }
     }
 }
