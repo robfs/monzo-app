@@ -45,12 +45,12 @@ DashboardScreen {
             border: round $primary;
         }
 
-        Balance {
+        BalanceView {
             column-span: 2;
             row-span: 2;
             border: round $primary;
             width: 23;
-            align-horizontal: right;
+            text-align: right;
         }
     }
 }

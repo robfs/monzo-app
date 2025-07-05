@@ -11,7 +11,7 @@ from textual.widgets import Footer
 from textual.widgets import Header
 from textual.worker import get_current_worker
 
-from ..views import Balance
+from ..views import BalanceView
 from ..views import LatestTransactionsView
 from ..views import LogoView
 
@@ -24,7 +24,7 @@ class DashboardScreen(Screen):
     transactions_table: reactive[LatestTransactionsView] = reactive(
         LatestTransactionsView()
     )
-    balance: reactive[Balance] = reactive(Balance())
+    balance: reactive[BalanceView] = reactive(BalanceView())
 
     def compose(self) -> ComposeResult:
         grid = Container(LogoView(), self.transactions_table, self.balance)

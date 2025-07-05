@@ -4,10 +4,10 @@ from textual.widgets import Digits
 
 from .data_view import DataView
 
-__all__ = ["Balance"]
+__all__ = ["BalanceView"]
 
 
-class Balance(Digits, DataView):
+class BalanceView(Digits, DataView):
     """Widget to display the current balance."""
 
     sql_query = "select sum(amount) from transactions"
