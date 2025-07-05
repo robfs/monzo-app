@@ -29,29 +29,76 @@ DashboardScreen {
 
         layout: grid;
         grid-gutter: 1;
-        grid-size: 12 10;
+        grid-size: 12 15;
 
         padding: 1;
 
         LogoView {
             column-span: 2;
-            row-span: 3;
+            row-span: 4;
             margin: 2 0;
         }
 
-        DataTable {
-            column-span: 10;
-            row-span: 3;
+        MonthlyChartView {
             border: round $primary;
+
+            column-span: 10;
+            row-span: 6;
         }
 
         BalanceView {
             column-span: 2;
             row-span: 2;
+
             border: round $primary;
-            width: 23;
+            height: 100%;
             text-align: right;
         }
+
+        PayMonthView {
+            border: round $primary;
+            column-span: 2;
+            row-span: 2;
+        }
+
+        SpendingLastMonthChartView {
+            border: round $primary;
+            column-span: 4;
+            row-span: 9;
+        }
+
+        TopCategoriesTableView {
+            border: round $primary;
+            column-span: 3;
+            row-span: 5;
+        }
+
+        TopMerchanatsTableView {
+            border: round $primary;
+            column-span: 3;
+            row-span: 5;
+        }
+
+        DaysLeftView {
+            border: round $primary;
+            column-span: 2;
+            row-span: 2;
+        }
+
+        LatestTransactionsView {
+            border: round $primary;
+            column-span: 10;
+            row-span: 5;
+            border: round $primary;
+        }
+
+        TBCView {
+            border: round $primary;
+            column-span: 2;
+            row-span: 2;
+        }
+
+
     }
 }
 

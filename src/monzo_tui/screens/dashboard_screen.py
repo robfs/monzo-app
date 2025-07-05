@@ -22,35 +22,73 @@ logger = logging.getLogger(__name__)
 class MonthlyChartView(Placeholder):
     """A placeholder widget for the monthly expenditure chart."""
 
+    def on_mount(self) -> None:
+        self.border_title = "Monthly Spending Chart"
+
 
 class PayMonthView(Placeholder):
     """A placeholder widget for the pay month."""
+
+    def on_mount(self) -> None:
+        self.border_title = "Pay Month"
 
 
 class DaysLeftView(Placeholder):
     """A placeholder widget for the days left."""
 
+    def on_mount(self) -> None:
+        self.border_title = "Days Left"
 
-class CategoryChartView(Placeholder):
+
+class SpendingLastMonthChartView(Placeholder):
     """A placeholder widget for the category chart."""
 
+    def on_mount(self) -> None:
+        self.border_title = "Spending Last Month"
 
-class CategoryTableView(Placeholder):
+
+class TopCategoriesTableView(Placeholder):
     """A placeholder widget for the category table."""
+
+    def on_mount(self) -> None:
+        self.border_title = "Spending this Month"
+
+
+class TopMerchanatsTableView(Placeholder):
+    """A placeholder widget for the category table."""
+
+    def on_mount(self) -> None:
+        self.border_title = "Top Merchants"
+
+
+class TBCView(Placeholder):
+    """A placeholder widget for the TBC."""
+
+    def on_mount(self) -> None:
+        self.border_title = "TBC"
 
 
 class DashboardScreen(Screen):
     """The main dashboard screen."""
 
     def compose(self) -> ComposeResult:
-        grid = Container(
-            LogoView(), self.latest_transactions_table(), self.balance_view()
+        container = Container(
+            LogoView(),
+            MonthlyChartView("MonthlyChartView"),
+            self.balance_view(),
+            PayMonthView("PayMonthView"),
+            SpendingLastMonthChartView("CategoryChartView"),
+            TopCategoriesTableView("CategoryTableView"),
+            TopMerchanatsTableView("TopMerchantsTableView"),
+            DaysLeftView("DaysLeftView"),
+            TBCView("TBCView"),
+            self.latest_transactions_table(),
         )
-        grid.border_title = "Dashboard"
-        grid.border_subtitle = "Dashboard of headline analysis."
+        container.border_title = "Dashboard"
+        container.border_subtitle = "Dashboard of headline analysis."
         yield Footer()
         yield Header()
-        yield grid
+        yield container
 
     @property
     def transactions_table(self) -> LatestTransactionsView:
