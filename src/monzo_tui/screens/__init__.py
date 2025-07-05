@@ -9,7 +9,7 @@ from .sql_screen import SQLScreen
 __all__ = [
     "DashboardScreen",
     "QuitModalScreen",
+    "SQLScreen",
     "SettingsErrorScreen",
     "SettingsScreen",
-    "SQLScreen",
 ]

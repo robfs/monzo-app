@@ -12,7 +12,7 @@ from textual.widgets import Header
 from textual.worker import get_current_worker
 
 from ..views import Balance
-from ..views import TransactionsTable
+from ..views import LatestTransactionsView
 from ..views import LogoView
 
 logger = logging.getLogger(__name__)
@@ -21,7 +21,9 @@ logger = logging.getLogger(__name__)
 class DashboardScreen(Screen):
     """The main dashboard screen."""
 
-    transactions_table: reactive[TransactionsTable] = reactive(TransactionsTable())
+    transactions_table: reactive[LatestTransactionsView] = reactive(
+        LatestTransactionsView()
+    )
     balance: reactive[Balance] = reactive(Balance())
 
     def compose(self) -> ComposeResult:

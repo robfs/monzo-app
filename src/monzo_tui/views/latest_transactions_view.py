@@ -7,13 +7,13 @@ from textual.widgets import DataTable
 
 from .data_view import DataView
 
-__all__ = ["TransactionsTable"]
+__all__ = ["LatestTransactionsView"]
 
 
 logger = logging.getLogger(__name__)
 
 
-class TransactionsTable(DataTable, DataView):
+class LatestTransactionsView(DataTable, DataView):
     """A table displaying transactions."""
 
     sql_query: str = """

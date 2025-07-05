@@ -7,66 +7,17 @@ from textual.app import ComposeResult
 from textual.containers import Container
 from textual.reactive import reactive
 from textual.screen import Screen
+from textual.widgets import Button
 from textual.widgets import Footer
-from textual.widgets import Header, TextArea, Static, Button, DataTable
+from textual.widgets import Header
+from textual.widgets import TextArea
 from textual.worker import get_current_worker
-from textual_plotext import PlotextPlot
 
-from ..views import DataView
-
+from ..views import CodeEditorView
+from ..views import CustomSQLChartView
+from ..views import CustomSQLTableView
 
 logger = logging.getLogger(__name__)
-
-
-class SQLTextView(Static):
-    """A custom text area widget for displaying SQL queries."""
-
-    def compose(self) -> ComposeResult:
-        query = "select\n\tcategory,\n\tsum(amount) as total_amount\nfrom transactions\ngroup by category\norder by total_amount desc"
-        yield TextArea.code_editor(query, language="sql", theme="css")
-        yield Button("Run Query", variant="success", id="run-query")
-
-    def on_mount(self) -> None:
-        self.border_title = "SQL Editor"
-
-
-class TableView(DataTable, DataView):
-    """A custom placeholder widget for displaying table data."""
-
-    def on_mount(self) -> None:
-        self.border_title = "Table View"
-        self.zebra_stripes = True
-        self.cursor_type = "row"
-
-    def update(self, query: str) -> None:
-        self.clear(columns=True)
-        self._column_names = self.get_column_names_from_query(query)
-        columns = self.pretty_columns()
-        data = self.run_query(query)
-
-        self.add_columns(*columns)
-        self.add_rows(data)
-
-
-class ChartView(PlotextPlot, DataView):
-    """A custom placeholder widget for displaying chart data."""
-
-    def on_mount(self) -> None:
-        self.border_title = "Chart View"
-
-    def replot(self) -> None:
-        data = self.data
-        columns = self.pretty_columns()
-        self.plt.bar([row[0] for row in data], [float(row[1]) for row in data])
-        self.plt.title(f"{columns[1]} vs {columns[0]}")
-        self.refresh()
-
-    def update(self, query: str) -> None:
-        self.plt.clear_data()
-        self.refresh()
-        self._column_names = self.get_column_names_from_query(query)
-        self.data = self.run_query(query)
-        self.replot()
 
 
 class SQLScreen(Screen):
@@ -87,26 +38,26 @@ class SQLScreen(Screen):
     def on_mount(self) -> None:
         self.on_text_area_changed(TextArea.Changed(TextArea()))
 
-    def code_editor(self) -> SQLTextView:
-        return SQLTextView()
+    def code_editor(self) -> CodeEditorView:
+        return CodeEditorView()
 
-    def chart_view(self) -> ChartView:
-        return ChartView()
+    def chart_view(self) -> CustomSQLChartView:
+        return CustomSQLChartView()
 
-    def table_view(self) -> TableView:
-        return TableView()
+    def table_view(self) -> CustomSQLTableView:
+        return CustomSQLTableView()
 
     def on_text_area_changed(self, event: TextArea.Changed) -> None:
         self.sql_query = self.query_one(TextArea).text
 
     def update_all(self):
         try:
-            self.query_one(TableView).update(self.sql_query)
+            self.query_one(CustomSQLTableView).update(self.sql_query)
         except Exception as e:
             logger.error(f"Error updating table view: {e}")
             self.app.notify(f"Error updating table view: {e}", severity="error")
         try:
-            self.query_one(ChartView).update(self.sql_query)
+            self.query_one(CustomSQLChartView).update(self.sql_query)
         except Exception as e:
             logger.error(f"Error updating chart view: {e}")
             self.app.notify(f"Error updating chart view: {e}", severity="error")
