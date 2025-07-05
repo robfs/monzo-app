@@ -13,6 +13,7 @@ from textual.worker import get_current_worker
 
 from ..views import Balance
 from ..views import TransactionsTable
+from ..views import LogoView
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +25,7 @@ class DashboardScreen(Screen):
     balance: reactive[Balance] = reactive(Balance())
 
     def compose(self) -> ComposeResult:
-        grid = Container(self.balance, self.transactions_table)
+        grid = Container(LogoView(), self.balance, self.transactions_table)
         grid.border_title = "Dashboard"
         grid.border_subtitle = "Dashboard of headline analysis."
         yield Footer()
