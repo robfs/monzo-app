@@ -77,10 +77,10 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
         *args,
         **kwargs,
     ):
-        self.spreadsheet_id = spreadsheet_id
-        self.credentials_path = credentials_path
-        self.pay_day_type = pay_day_type
-        self.pay_day = pay_day
+        self.existing_spreadsheet_id = spreadsheet_id
+        self.existing_credentials_path = credentials_path
+        self.existing_pay_day_type = pay_day_type
+        self.existing_pay_day = pay_day
         super().__init__(*args, **kwargs)
 
     def compose(self) -> ComposeResult:
@@ -97,10 +97,10 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
 
     @property
     def credentials_string(self) -> str:
-        return str(self.credentials_path)
+        return str(self.existing_credentials_path)
 
     def spreadsheet_id_input(self):
-        return SpreadsheetIdInput(self.spreadsheet_id)
+        return SpreadsheetIdInput(self.existing_spreadsheet_id)
 
     def credentials_path_input(self):
         return CredentialsPathInput(self.credentials_string)
@@ -112,26 +112,30 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
             ("Specific Day", "specific"),
         ]
         return PayDayTypeSelect(
-            value=self.pay_day_type,
+            value=self.existing_pay_day_type,
             options=pay_day_types,
             allow_blank=False,
             compact=True,
         )
 
     def pay_day_input(self):
-        return PayDayInput(f"{self.pay_day}", type="integer", compact=True)
+        return PayDayInput(f"{self.existing_pay_day}", type="integer", compact=True)
 
-    def get_spreadsheet_id(self) -> str:
-        return self.query_one(SpreadsheetIdInput).value
+    @property
+    def spreadsheet_id(self) -> SpreadsheetIdInput:
+        return self.query_one(SpreadsheetIdInput)
 
-    def get_credentials_path(self) -> Path:
-        return Path(self.query_one(CredentialsPathInput).value).expanduser()
+    @property
+    def credentials_path(self) -> CredentialsPathInput:
+        return self.query_one(CredentialsPathInput)
 
-    def get_pay_day_type(self) -> str:
-        return self.query_one(PayDayTypeSelect).value
+    @property
+    def pay_day_type(self) -> PayDayTypeSelect:
+        return self.query_one(PayDayTypeSelect)
 
-    def get_pay_day(self) -> int:
-        return int(self.query_one(PayDayInput).value)
+    @property
+    def pay_day(self) -> PayDayInput:
+        return self.query_one(PayDayInput)
 
     def action_cancel(self) -> None:
         """Cancel action triggered by ESC key."""
@@ -139,10 +143,10 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
 
     def action_save(self) -> None:
         """Save action triggered by ENTER key."""
-        spreadsheet_id = self.get_spreadsheet_id()
-        credentials_path = self.get_credentials_path()
-        pay_day_type = self.get_pay_day_type()
-        pay_day = self.get_pay_day()
+        spreadsheet_id: str = self.spreadsheet_id.value
+        credentials_path: Path = Path(self.credentials_path.value).expanduser()
+        pay_day_type: str = self.pay_day_type.value
+        pay_day: int = int(self.pay_day.value)
 
         self.dismiss((True, spreadsheet_id, credentials_path, pay_day_type, pay_day))
 
@@ -157,15 +161,13 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
     @on(Select.Changed, "PayDayTypeSelect")
     def select_pay_day_type(self, event: Select.Changed) -> None:
         """Handle pay day type change event."""
+        pay_day_input = self.pay_day
         if event.value == "last":
-            pay_day_input = self.query_one(PayDayInput)
             pay_day_input.value = "31"
             pay_day_input.disabled = True
         elif event.value == "first":
-            pay_day_input = self.query_one(PayDayInput)
             pay_day_input.value = "1"
             pay_day_input.disabled = True
         elif event.value == "specific":
-            pay_day_input = self.query_one(PayDayInput)
             pay_day_input.disabled = False
             pay_day_input.focus()
