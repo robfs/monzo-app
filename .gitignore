@@ -209,3 +209,5 @@ __marimo__/
 # Monzo py
 credentials.json
 **/credentials.json
+
+.DS_Store
