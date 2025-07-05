@@ -17,4 +17,4 @@ class Balance(Digits, DataView):
 
     def watch_data(self, data: list[tuple]) -> None:
         if data:
-            self.update(f"{data[0][0]:,.2f}")
+            self.update(f"{data[0][0]:,.2f}"[:6])
