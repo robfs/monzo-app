@@ -27,7 +27,7 @@ class MonthlyChartView(PlotextPlot, DataView):
         GROUP BY
             month
         ORDER BY
-            month
+            month desc
     """
 
     def on_mount(self) -> None:
