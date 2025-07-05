@@ -36,6 +36,7 @@ DashboardScreen {
         LogoView {
             column-span: 2;
             row-span: 4;
+            align: center middle;
             margin: 2 0;
         }
 
