@@ -1,84 +1,156 @@
 ModalScreen {
     align: center middle;
+
+    Container {
+        width: 60;
+
+        border: double $accent;
+        background: $surface;
+
+        border-title-background: $accent;
+        border-title-style: bold;
+        border-title-color: $background;
+
+        border-subtitle-style: italic;
+    }
 }
 
-ModalScreen Container {
-    width: 60;
+DashboardScreen {
 
-    border: double $primary;
-    background: $surface;
+    Container {
+        border: double $primary;
+        background: $surface;
 
-    border-title-background: $primary-background;
-    border-title-style: bold;
-    border-title-color: $background;
+        border-title-background: $primary;
+        border-title-style: bold;
+        border-title-color: $background;
 
-    border-subtitle-style: italic;
+        border-subtitle-style: italic;
+
+        layout: grid;
+        grid-gutter: 1;
+
+        padding: 1;
+
+        Balance {
+            border: round $primary;
+            width: 23;
+            align-horizontal: right;
+        }
+
+        DataTable {
+            border: round $primary;
+        }
+    }
 }
 
-Screen Container {
-    border: double $primary;
-    background: $surface;
+SQLScreen {
+    Container {
+        border: double $secondary;
+        background: $surface;
 
-    border-title-background: $primary-background;
-    border-title-style: bold;
-    border-title-color: $background;
+        border-title-background: $secondary;
+        border-title-style: bold;
+        border-title-color: $background;
 
-    border-subtitle-style: italic;
+        border-subtitle-style: italic;
+
+        layout: grid;
+        padding: 1;
+        grid-size: 2 2;
+        grid-columns: 2fr 3fr;
+        grid-rows: 1fr;
+        grid-gutter: 1;
+
+        SQLTextView {
+            border: round $secondary;
+            row-span: 2;
+
+            Button {
+                margin: 1;
+            }
+        }
+
+        ChartView {
+            border: round $secondary;
+            height: 100%;
+        }
+
+        TableView {
+            border: round $secondary;
+            height: 100%;
+        }
+    }
 }
 
-QuitModalScreen Container {
-    height: 8;
+QuitModalScreen {
+
+    Container {
+        height: 8;
+
+        Label {
+            height: 1fr;
+            width: 1fr;
+            content-align: center middle;
+        }
+    }
 }
 
-QuitModalScreen Container Label {
-    height: 1fr;
-    width: 1fr;
-    content-align: center middle;
-}
+SettingsScreen {
+    Container {
+        height: 22;
+        layout: grid;
+        grid-size: 2 3;
+        grid-columns: 3fr 2fr;
+        grid-rows: 1fr;
+        grid-gutter: 1;
+        padding: 1;
 
-SettingsScreen Container {
-    height: 15;
-}
+        Input {
+            border: round $accent;
+            border-title-style: bold;
+            padding: 1 2;
+            height: 5;
+        }
 
-SettingsScreen Input {
-    border: round $primary;
-    border-title-style: bold;
-    padding: 1 2;
-    margin: 1;
-    height: 5;
+        Select {
+            border: round $accent;
+            border-title-style: bold;
+            height: 5;
+        }
 
+        SpreadsheetIdInput {
+            column-span: 2;
+        }
+
+        CredentialsPathInput {
+            column-span: 2;
+        }
+
+        PayDayTypeSelect {
+            align: left middle;
+            padding: 0 2;
+
+            OptionsList {
+                border: round $accent;
+            }
+        }
+    }
 }
 
 SettingsErrorScreen {
     align: center middle;
-}
 
-SettingsErrorScreen Container {
-    padding: 0 1;
-    height: 10;
-    width: 50;
-    content-align: center middle;
-}
+    Container {
+        padding: 0 1;
+        height: 10;
+        width: 50;
+        content-align: center middle;
 
-SettingsErrorScreen Container Label {
-    height: 1fr;
-    width: 1fr;
-    content-align: center middle;
-}
-
-Static {
-    border: round $primary;
-}
-
-DataTable {
-    border: round $primary;
-}
-
-Balance {
-    border: round $primary;
-    width: 20;
-}
-
-ToastRack {
-    align: right top;
+        Label {
+            height: 1fr;
+            width: 1fr;
+            content-align: center middle;
+        }
+    }
 }
