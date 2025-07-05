@@ -99,7 +99,7 @@ class Monzo(App):
                 # self.call_from_thread(self._post_message_to_dashboard)
                 # self._post_message_to_dashboard()
                 for screen in self.screen_stack:
-                    screen.post_message(self.MonzoTransactionsInitialized())
+                    screen.post_message(self.TransactionsInitialized())
 
         except Exception as e:
             logger.error(f"Failed to initialize MonzoTransactions: {e}")
@@ -116,7 +116,7 @@ class Monzo(App):
         """Called when the worker state changes."""
         self.log(event)
 
-    class MonzoTransactionsInitialized(Message):
+    class TransactionsInitialized(Message):
         """Message sent when MonzoTransactions is successfully initialized."""
 
     def check_settings(
