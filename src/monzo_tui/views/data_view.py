@@ -74,6 +74,5 @@ class DataView:
     def column_names(self) -> list[str]:
         """Return the column names of the query."""
         if not self._column_names:
-            logger.warning(self.sql_query)
             self._column_names = self.get_column_names_from_query(self.sql_query)
         return self._column_names

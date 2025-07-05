@@ -28,7 +28,7 @@ class TransactionsTable(DataTable, DataView):
     ORDER BY date DESC, time DESC
     LIMIT 10
     """
-    _columns_names = ["Date", "Time", "Name", "Category", "Amount"]
+    _column_names = ["Date", "Time", "Name", "Category", "Amount"]
     data: reactive[list[tuple]] = reactive([])
 
     def on_mount(self) -> None:
