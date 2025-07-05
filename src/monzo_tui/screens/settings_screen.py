@@ -6,13 +6,13 @@ from pathlib import Path
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container
-from textual.events import Key, Event
-from textual.containers import Horizontal
+from textual.events import Key
 from textual.screen import ModalScreen
 from textual.widgets import Footer
 from textual.widgets import Input
 from textual.widgets import Label
-from textual.widgets import Select, OptionList
+from textual.widgets import OptionList
+from textual.widgets import Select
 
 __all__ = ["SettingsErrorScreen", "SettingsScreen"]
 
@@ -149,7 +149,7 @@ class SettingsScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
     def on_key(self, event: Key) -> None:
         """Handle key events, specifically Enter key when inputs are focused."""
         if event.key == "enter":
-            if isinstance(self.focused, (OptionList, Select)):
+            if isinstance(self.focused, OptionList | Select):
                 return
             self.action_save()
             event.prevent_default()

@@ -73,7 +73,7 @@ SQLScreen {
         grid-rows: 1fr;
         grid-gutter: 1;
 
-        SQLTextView {
+        CodeEditorView {
             border: round $secondary;
             row-span: 2;
 
@@ -82,12 +82,12 @@ SQLScreen {
             }
         }
 
-        ChartView {
+        CustomSQLChartView {
             border: round $secondary;
             height: 100%;
         }
 
-        TableView {
+        CustomSQLTableView {
             border: round $secondary;
             height: 100%;
         }
