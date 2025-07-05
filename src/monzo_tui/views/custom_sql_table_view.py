@@ -4,6 +4,8 @@ from textual.widgets import DataTable
 
 from .data_view import DataView
 
+__all__ = ["CustomSQLTableView"]
+
 
 class CustomSQLTableView(DataTable, DataView):
     """A custom placeholder widget for displaying table data."""

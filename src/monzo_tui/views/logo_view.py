@@ -7,6 +7,8 @@ from textual.reactive import reactive
 from textual.widgets import Label
 from textual.widgets import Static
 
+__all__ = ["LogoView"]
+
 
 class LogoView(Static):
     """LogoView class for displaying the Monzo logo."""
