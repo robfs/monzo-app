@@ -15,15 +15,9 @@ from textual.worker import get_current_worker
 from ..views import BalanceView
 from ..views import LatestTransactionsView
 from ..views import LogoView
+from ..views import MonthlyChartView
 
 logger = logging.getLogger(__name__)
-
-
-class MonthlyChartView(Placeholder):
-    """A placeholder widget for the monthly expenditure chart."""
-
-    def on_mount(self) -> None:
-        self.border_title = "Monthly Spending Chart"
 
 
 class PayMonthView(Placeholder):
@@ -74,7 +68,7 @@ class DashboardScreen(Screen):
     def compose(self) -> ComposeResult:
         container = Container(
             LogoView(),
-            MonthlyChartView("MonthlyChartView"),
+            MonthlyChartView(),
             self.balance_view(),
             PayMonthView("PayMonthView"),
             SpendingLastMonthChartView("CategoryChartView"),
@@ -98,6 +92,10 @@ class DashboardScreen(Screen):
     def balance(self) -> BalanceView:
         return self.query_one(BalanceView)
 
+    @property
+    def monthly_chart(self) -> MonthlyChartView:
+        return self.query_one(MonthlyChartView)
+
     def latest_transactions_table(self):
         return LatestTransactionsView()
 
@@ -105,8 +103,18 @@ class DashboardScreen(Screen):
         return BalanceView()
 
     def update_all(self) -> None:
-        self.transactions_table.refresh_data()
-        self.balance.refresh_data()
+        try:
+            self.transactions_table.refresh_data()
+        except Exception as e:
+            self.app.notify(f"Error refreshing transactions table: {e}")
+        try:
+            self.balance.refresh_data()
+        except Exception as e:
+            self.app.notify(f"Error refreshing balance: {e}")
+        try:
+            self.monthly_chart.update()
+        except Exception as e:
+            self.app.notify(f"Error refreshing monthly chart: {e}")
 
     @work(exclusive=True, thread=True)
     def on_monzo_transactions_initialized(self, message) -> None:
