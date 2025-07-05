@@ -18,6 +18,7 @@ class DataView:
 
     sql_query: str = "SELECT 1 from transactions"
     _column_names: list[str] = []
+    _column_widths: list[int | None] = []
     data: reactive[list[tuple]] = reactive([])
 
     def db_connection(self):
@@ -76,3 +77,9 @@ class DataView:
         if not self._column_names:
             self._column_names = self.get_column_names_from_query(self.sql_query)
         return self._column_names
+
+    def column_widths(self) -> list[int | None]:
+        """Return the column widths of the query."""
+        if not self._column_widths:
+            self._column_widths = [None] * len(self._column_names)
+        return self._column_widths

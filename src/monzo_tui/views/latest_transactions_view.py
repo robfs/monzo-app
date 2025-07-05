@@ -29,6 +29,7 @@ class LatestTransactionsView(DataTable, DataView):
     LIMIT 10
     """
     _column_names = ["Date", "Time", "Name", "Category", "Amount"]
+    _column_widths = [10, 8, 22, 16, 7]
     data: reactive[list[tuple]] = reactive([])
 
     def on_mount(self) -> None:
@@ -40,7 +41,10 @@ class LatestTransactionsView(DataTable, DataView):
         """Load transaction data from the app's DuckDB connection."""
         # Clear existing data
         self.clear(columns=True)
-        self.add_columns(*self.column_names())
+        for column, width in zip(
+            self.column_names(), self.column_widths(), strict=True
+        ):
+            self.add_column(column, width=width)
 
         # Add rows to the table
         for transaction in data:
