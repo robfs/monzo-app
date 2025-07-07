@@ -1,3 +1,19 @@
+.card {
+    border: round $primary;
+    border-subtitle-background: $primary-background;
+}
+
+.screen {
+    border: double $primary;
+    background: $surface;
+
+    border-title-background: $primary;
+    border-title-style: bold;
+    border-title-color: $background;
+
+    border-subtitle-style: italic;
+}
+
 ModalScreen {
     align: center middle;
 
@@ -18,14 +34,7 @@ ModalScreen {
 DashboardScreen {
 
     Container {
-        border: double $primary;
-        background: $surface;
 
-        border-title-background: $primary;
-        border-title-style: bold;
-        border-title-color: $background;
-
-        border-subtitle-style: italic;
 
         layout: grid;
         grid-gutter: 1;
@@ -41,8 +50,6 @@ DashboardScreen {
         }
 
         MonthlyChartView {
-            border: round $primary;
-
             column-span: 10;
             row-span: 6;
         }
@@ -50,58 +57,40 @@ DashboardScreen {
         BalanceView {
             column-span: 2;
             row-span: 2;
-
-            border: round $primary;
             height: 100%;
             text-align: right;
         }
 
-        PayMonthView {
-            border: round $primary;
+        PayDayView {
             column-span: 2;
-            row-span: 2;
+            row-span: 6;
+            width: 100%;
+            height: 100%;
         }
 
         SpendingLastMonthChartView {
-            border: round $primary;
             column-span: 4;
             row-span: 9;
         }
 
         TopCategoriesTableView {
-            border: round $primary;
-            column-span: 3;
-            row-span: 5;
-        }
-
-        TopMerchantsTableView {
-            border: round $primary;
             column-span: 3;
             row-span: 5;
             height: 100%;
         }
 
-        DaysLeftView {
-            border: round $primary;
-            column-span: 2;
-            row-span: 2;
+        TopMerchantsTableView {
+            column-span: 3;
+            row-span: 5;
+            height: 100%;
         }
 
         LatestTransactionsView {
-            border: round $primary;
             column-span: 10;
             row-span: 5;
             border: round $primary;
             height: 100%;
         }
-
-        TBCView {
-            border: round $primary;
-            column-span: 2;
-            row-span: 2;
-        }
-
-
     }
 }
 
@@ -124,7 +113,6 @@ SQLScreen {
         grid-gutter: 1;
 
         CodeEditorView {
-            border: round $secondary;
             row-span: 2;
 
             Button {
@@ -133,12 +121,10 @@ SQLScreen {
         }
 
         CustomSQLChartView {
-            border: round $secondary;
             height: 100%;
         }
 
         CustomSQLTableView {
-            border: round $secondary;
             height: 100%;
         }
     }
@@ -168,14 +154,12 @@ SettingsScreen {
         padding: 1;
 
         Input {
-            border: round $accent;
             border-title-style: bold;
             padding: 1 2;
             height: 5;
         }
 
         Select {
-            border: round $accent;
             border-title-style: bold;
             height: 5;
         }
