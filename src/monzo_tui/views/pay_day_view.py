@@ -5,10 +5,8 @@ import datetime
 import logging
 import re
 
-from textual.app import ComposeResult
-from textual.containers import Container
-from textual.widgets import Label
 from textual.reactive import reactive
+from textual.widgets import Label
 
 from ..utilities import next_pay_day
 

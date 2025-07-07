@@ -3,7 +3,7 @@
 import logging
 
 from textual_plotext import PlotextPlot
-from textual import work
+
 from .data_view import DataView
 
 __all__ = ["MonthlyChartView"]
