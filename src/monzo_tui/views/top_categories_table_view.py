@@ -1,26 +1,26 @@
-"""Module containing the TopMerchantsTableView class."""
+"""Module containing the TopCategoriesTableView class."""
 
 from textual.widgets import DataTable
 
 from .data_view import DataView
 
-__all__ = ["TopMerchantsTableView"]
+__all__ = ["TopCategoriesTableView"]
 
 
-class TopMerchantsTableView(DataTable, DataView):
+class TopCategoriesTableView(DataTable, DataView):
     """A placeholder widget for the category table."""
 
     sql_query = """
-    select name, sum(amount * -1) as amount, count(amount) as txns
+    select category, sum(amount * -1) as amount, count(amount) as txns
     from transactions
     where
     strftime('%Y-%m', date) = (select strftime('%Y-%m', date) from transactions order by date desc limit 1)
-    group by name
+    group by category
     order by amount desc
     """
 
     def on_mount(self) -> None:
-        self.border_title = "Top Merchants"
+        self.border_title = "Top Categories"
         self.cursor_type = "row"
         self.zebra_stripes = True
 

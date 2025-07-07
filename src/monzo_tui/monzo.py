@@ -23,12 +23,14 @@ from .screens import QuitModalScreen
 from .screens import SettingsErrorScreen
 from .screens import SettingsScreen
 from .screens import SQLScreen
+from .screens.dashboard_screen import PayDayView
 
 __all__ = ["Monzo"]
 
 logging.basicConfig(level="DEBUG", handlers=[TextualHandler()])
 
 logger = logging.getLogger(__name__)
+# 157 x 55
 
 
 class Monzo(App):
@@ -72,6 +74,12 @@ class Monzo(App):
         logger.info(f"Credentials path changed to: {new_credentials_path}")
         if self.spreadsheet_id and new_credentials_path.exists():
             self.get_transactions()
+
+    def watch_pay_day(self, new_pay_day: int) -> None:
+        """Watch for changes to pay_day and update the pay day widget."""
+        dashboard = self.get_screen("dashboard")
+        widget = dashboard.query_one(PayDayView)
+        widget.pay_day = new_pay_day
 
     @work(exclusive=True, thread=True)
     def get_transactions(self) -> None:
