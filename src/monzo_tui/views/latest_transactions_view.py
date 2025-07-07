@@ -26,7 +26,7 @@ class LatestTransactionsView(DataTable, DataView):
         currency
     FROM transactions
     ORDER BY date DESC, time DESC
-    LIMIT 10
+    LIMIT 100
     """
     _column_names = ["Date", "Time", "Name", "Category", "Amount"]
     _column_widths = [10, 8, 22, 16, 7]

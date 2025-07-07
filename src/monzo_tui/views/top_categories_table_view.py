@@ -13,8 +13,7 @@ class TopCategoriesTableView(DataTable, DataView):
     sql_query = """
     select category, sum(amount * -1) as amount, count(amount) as txns
     from transactions
-    where
-    strftime('%Y-%m', date) = (select strftime('%Y-%m', date) from transactions order by date desc limit 1)
+    where expenseMonthDate = (select max(expenseMonthDate) from transactions)
     group by category
     order by amount desc
     """

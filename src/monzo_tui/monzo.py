@@ -38,9 +38,9 @@ class Monzo(App):
 
     CSS_PATH = "assets/styles.tcss"
     BINDINGS = [
-        ("d", "push_screen('dashboard')", "Dashboard"),
-        ("c", "push_screen('sql')", "Custom SQL"),
-        ("R", "get_transactions", "Refresh"),
+        ("D", "push_screen('dashboard')", "Dashboard"),
+        ("C", "push_screen('sql')", "Custom SQL"),
+        ("r", "get_transactions", "Refresh"),
         ("s", "open_settings", "Settings"),
         ("q", "request_quit", "Quit"),
     ]
@@ -201,9 +201,98 @@ class Monzo(App):
 
         db_conn = self.monzo_transactions.duck_db()
         try:
+            self.add_pay_day_information(db_conn)
             yield db_conn
         finally:
             db_conn.close()
+
+    def add_pay_days_table(self, db_conn: DuckDBPyConnection) -> None:
+        sql_query: str = """
+        CREATE OR REPLACE TABLE paydays AS
+        WITH month_series AS (
+            SELECT
+                date_part('year', date_series) as year,
+                date_part('month', date_series) as monthNum
+            FROM generate_series(
+                DATE '2017-01-01',
+                DATE '2030-12-01',
+                INTERVAL '1 month'
+            ) as t(date_series)
+        )
+        SELECT
+            year,
+            monthNum,
+            make_date(
+                CAST(year AS INTEGER),
+                CAST(monthNum AS INTEGER),
+                ?
+            ) + INTERVAL (
+                CASE
+                    WHEN date_part('isodow', make_date(CAST(year AS INTEGER), CAST(monthNum AS INTEGER), 25)) BETWEEN 1 AND 5 THEN 0
+                    WHEN date_part('isodow', make_date(CAST(year AS INTEGER), CAST(monthNum AS INTEGER), 25)) = 6 THEN 2  -- Saturday -> Monday
+                    WHEN date_part('isodow', make_date(CAST(year AS INTEGER), CAST(monthNum AS INTEGER), 25)) = 7 THEN 1  -- Sunday -> Monday
+                END
+            ) DAY as lastDate,
+            lead(lastDate) over (order by lastDate) as nextDate
+        FROM month_series
+        ORDER BY year, monthNum
+        """
+        db_conn.sql(sql_query, params=[self.pay_day])
+
+    def add_pay_day_information(self, db_conn: DuckDBPyConnection) -> None:
+        self.add_pay_days_table(db_conn)
+        sql_query = """
+        ALTER VIEW transactions RENAME TO RAW_TRANSACTIONS;
+
+        CREATE OR REPLACE TABLE transactions
+        AS SELECT
+            raw_transactions.*,
+            paydays.*,
+            if (raw_transactions.date < paydays.lastDate, paydays.lastDate, paydays.nextDate) as nextPayDay,
+            date_trunc('month', nextPayDay) as expenseMonthDate,
+            case date_part('month', expenseMonthDate)
+                when 1 then 'January'
+                when 2 then 'February'
+                when 3 then 'March'
+                when 4 then 'April'
+                when 5 then 'May'
+                when 6 then 'June'
+                when 7 then 'July'
+                when 8 then 'August'
+                when 9 then 'September'
+                when 10 then 'October'
+                when 11 then 'November'
+                when 12 then 'December'
+            end || ' ' || date_part('year', expenseMonthDate) as expenseMonth,
+            date_part('isodow', date) as dayOfWeekNum,
+            case dayOfWeekNum
+                when 1 then 'Monday'
+                when 2 then 'Tuesday'
+                when 3 then 'Wednesday'
+                when 4 then 'Thursday'
+                when 5 then 'Friday'
+                when 6 then 'Saturday'
+                when 7 then 'Sunday'
+            end as dayOfWeek,
+            case monthNum
+                when 1 then 'January'
+                when 2 then 'February'
+                when 3 then 'March'
+                when 4 then 'April'
+                when 5 then 'May'
+                when 6 then 'June'
+                when 7 then 'July'
+                when 8 then 'August'
+                when 9 then 'September'
+                when 10 then 'October'
+                when 11 then 'November'
+                when 12 then 'December'
+            end as month,
+            sum(amount) OVER (ORDER BY date, time ROWS UNBOUNDED PRECEDING) as balance
+        FROM raw_transactions
+        LEFT JOIN paydays ON date_part('year', raw_transactions.date) = paydays.year AND date_part('month', raw_transactions.date) = paydays.monthNum;
+        """
+        db_conn.sql(sql_query)
 
 
 app = Monzo()

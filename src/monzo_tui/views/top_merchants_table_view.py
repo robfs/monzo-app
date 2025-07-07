@@ -11,10 +11,9 @@ class TopMerchantsTableView(DataTable, DataView):
     """A placeholder widget for the category table."""
 
     sql_query = """
-    select name, sum(amount * -1) as amount, count(amount) as txns
+    select name, min(category) as category, sum(amount * -1) as amount, count(amount) as txns
     from transactions
-    where
-    strftime('%Y-%m', date) = (select strftime('%Y-%m', date) from transactions order by date desc limit 1)
+    where expenseMonthDate = (select max(expenseMonthDate) from transactions)
     group by name
     order by amount desc
     """
@@ -28,4 +27,4 @@ class TopMerchantsTableView(DataTable, DataView):
         self.clear(columns=True)
         self.add_columns(*self.pretty_columns())
         for row in data:
-            self.add_row(row[0], f"£ {row[1]:,.2f}", str(row[2]))
+            self.add_row(row[0], row[1], f"£ {row[2]:,.2f}", str(row[3]))

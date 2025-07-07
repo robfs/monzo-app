@@ -21,9 +21,7 @@ class SpendingLastMonthChartView(PlotextPlot, DataView):
         FROM
             transactions
         WHERE
-            amount < 0
-        AND
-            strftime('%Y-%m', date) = (select strftime('%Y-%m', date - INTERVAL '1 month') from transactions order by date desc limit 1)
+            expenseMonthDate = (select max(expenseMonthDate) - interval 1 month from transactions)
         GROUP BY
             category
         ORDER BY
@@ -31,7 +29,7 @@ class SpendingLastMonthChartView(PlotextPlot, DataView):
     """
 
     def on_mount(self) -> None:
-        self.border_title = "Monthly Spending Chart"
+        self.border_title = "Spending Last Month"
 
     def replot(self) -> None:
         data = self.data

@@ -16,8 +16,9 @@ class MonthlyChartView(PlotextPlot, DataView):
 
     sql_query = """
         SELECT
-            strftime('%Y-%m', date) AS month,
-            SUM(amount * -1) AS total_spent
+            expenseMonth,
+            SUM(amount * -1) AS totalSpent,
+            expenseMonthDate
         FROM
             transactions
         WHERE
@@ -25,9 +26,9 @@ class MonthlyChartView(PlotextPlot, DataView):
         AND
             date > '2022-12-31'
         GROUP BY
-            month
+            expenseMonth, expenseMonthDate
         ORDER BY
-            month desc
+            expenseMonthDate
     """
 
     def on_mount(self) -> None:
@@ -36,8 +37,8 @@ class MonthlyChartView(PlotextPlot, DataView):
     def replot(self) -> None:
         data = self.data
         logger.info(f"Plotting {len(data)} rows")
-        months = [row[0] for row in data[:12]]
-        amounts = [float(row[1]) for row in data[:12]]
+        months = [row[0] for row in data[-12:]]
+        amounts = [float(row[1]) for row in data[-12:]]
         self.plt.clear_figure()
         self.plt.bar(months, amounts)
         self.refresh()
