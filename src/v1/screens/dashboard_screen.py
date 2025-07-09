@@ -4,6 +4,7 @@ import logging
 
 from textual.app import ComposeResult
 from textual.containers import Container
+from textual.message import Message
 from textual.screen import Screen
 
 from ..widgets import BalanceCard
@@ -39,3 +40,6 @@ class DashboardScreen(Screen):
         container.border_title = "Dashboard"
         container.border_subtitle = "Summary analytics screen"
         yield container
+
+    def on_monzo_transactions_available(self, message: Message) -> None:
+        self.app.notify(str(message), severity="information")
