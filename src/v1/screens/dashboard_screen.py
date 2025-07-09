@@ -44,3 +44,8 @@ class DashboardScreen(Screen):
     def on_monzo_transactions_available(self, message: Message) -> None:
         self.app.notify(str(message), severity="information")
         self.query_one(BalanceCard).fetch_data()
+        self.query_one(LatestTransactionsTable).fetch_data()
+        self.query_one(TopMerchantsTable).fetch_data()
+        self.query_one(TopCategoriesTable).fetch_data()
+        self.query_one(MonthlySpendChart).fetch_data()
+        self.query_one(LastMonthCategoryChart).fetch_data()

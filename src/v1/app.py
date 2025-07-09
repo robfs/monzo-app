@@ -56,10 +56,26 @@ class Monzo(App):
         logger.info("Fetching monzo data.")
         self.transactions = MonzoTransactions()
 
+    def add_pay_days_table(self, db: DuckDBPyConnection) -> None:
+        app = Path(__file__).parent
+        sql = app / "sql_scripts"
+        with open(sql / "add_pay_days_table.sql") as f:
+            sql = f.read()
+        db.sql(sql, params=[25])
+
+    def add_pay_days_to_transactions(self, db: DuckDBPyConnection) -> None:
+        app = Path(__file__).parent
+        sql = app / "sql_scripts"
+        with open(sql / "add_pay_days_to_transactions.sql") as f:
+            sql = f.read()
+        db.sql(sql)
+
     def watch_transactions(self, transactions: MonzoTransactions | None) -> None:
         logger.info("Transactions updated.")
         if transactions:
             self.db = transactions.duck_db()
+            self.add_pay_days_table(self.db)
+            self.add_pay_days_to_transactions(self.db)
             self.post_transactions_available()
 
     def post_transactions_available(self) -> None:
