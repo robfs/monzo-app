@@ -38,7 +38,13 @@ DashboardScreen {
         row-span: 2;
     }
 
-    BalanceCard {}
+    BalanceCard {
+        align: center middle;
+
+        Digits {
+            text-align: right;
+        }
+    }
 
     LastMonthCategoryChart {
         column-span: 2;
