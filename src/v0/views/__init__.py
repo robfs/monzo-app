@@ -12,6 +12,7 @@ from .pay_day_view import PayDayView
 from .top_merchants_table_view import TopMerchantsTableView
 from .top_categories_table_view import TopCategoriesTableView
 from .spending_last_month import SpendingLastMonthChartView
+from .exclusions_view import ExclusionsView
 
 __all__ = [
     "BalanceView",
@@ -26,4 +27,5 @@ __all__ = [
     "TopMerchantsTableView",
     "TopCategoriesTableView",
     "SpendingLastMonthChartView",
+    "ExclusionsView",
 ]

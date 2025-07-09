@@ -143,6 +143,14 @@ QuitModalScreen {
     }
 }
 
+ExclusionsScreen {
+    Container {
+        height: 30;
+        align: left middle;
+        padding: 1 3;
+    }
+}
+
 SettingsScreen {
     Container {
         height: 22;

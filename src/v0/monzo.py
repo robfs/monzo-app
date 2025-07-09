@@ -19,11 +19,12 @@ from textual.worker import Worker
 from textual.worker import get_current_worker
 
 from .screens import DashboardScreen
+from .screens import ExclusionsScreen
 from .screens import QuitModalScreen
 from .screens import SettingsErrorScreen
 from .screens import SettingsScreen
 from .screens import SQLScreen
-from .screens.dashboard_screen import PayDayView
+from .views import PayDayView, ExclusionsView
 
 __all__ = ["Monzo"]
 
@@ -40,16 +41,22 @@ class Monzo(App):
     BINDINGS = [
         ("D", "push_screen('dashboard')", "Dashboard"),
         ("C", "push_screen('sql')", "Custom SQL"),
+        ("x", "open_exclusions", "Exclusions"),
         ("r", "get_transactions", "Refresh"),
         ("s", "open_settings", "Settings"),
         ("q", "request_quit", "Quit"),
     ]
-    SCREENS = {"dashboard": DashboardScreen, "sql": SQLScreen}
+    SCREENS = {
+        "dashboard": DashboardScreen,
+        "sql": SQLScreen,
+        "exclusions": ExclusionsScreen,
+    }
 
     spreadsheet_id = reactive(os.getenv("MONZO_SPREADSHEET_ID", ""))
     credentials_path = reactive(Path().home() / ".monzo" / "credentials.json")
     pay_day_type = reactive("specific")
     pay_day = reactive(25)
+    exclusions = reactive([])
     monzo_transactions: reactive[MonzoTransactions | None] = reactive(None)
     db_connection: reactive[DuckDBPyConnection | None] = reactive(None)
 
@@ -68,6 +75,11 @@ class Monzo(App):
         logger.info(f"Spreadsheet ID changed to: {new_spreadsheet_id}")
         if new_spreadsheet_id and self.credentials_path.exists():
             self.get_transactions()
+
+    def on_exclusions_screen_exclusions_changed(self, message):
+        screen = self.get_screen("exclusions")
+        self.exclusions = screen.query_one(ExclusionsView).selected
+        self.notify(str(self.exclusions))
 
     def watch_credentials_path(self, new_credentials_path: Path) -> None:
         """Watch for changes to credentials_path and reinitialize MonzoTransactions."""
@@ -155,6 +167,10 @@ class Monzo(App):
                 self.exit()
 
         self.push_screen(QuitModalScreen(), check_quit)
+
+    def action_open_exclusions(self) -> None:
+        """Action to open the exclusions screen."""
+        self.push_screen(ExclusionsScreen())
 
     def action_open_settings(self) -> None:
         """Action to open the settings screen."""
