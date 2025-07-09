@@ -37,6 +37,12 @@ class Monzo(App):
         self.push_screen("dashboard")
         self.fetch_monzo_transactions()
 
+    async def _on_exit_app(self) -> None:
+        if self.db:
+            logger.debug("Closing database connection.")
+            self.db.close()
+        return await super()._on_exit_app()
+
     ## ACTION METHODS
     def action_request_quit(self):
         self.exit()
@@ -58,7 +64,7 @@ class Monzo(App):
 
     def post_transactions_available(self) -> None:
         for screen in self.screen_stack:
-            logger.debug("Posting TransactionsAvailable message.")
+            logger.debug(f"Posting TransactionsAvailable message to {screen}.")
             screen.post_message(self.TransactionsAvailable())
 
 
