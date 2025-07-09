@@ -1,6 +1,8 @@
 """Main app file."""
 
 import logging
+import os
+from pathlib import Path
 
 from duckdb import DuckDBPyConnection
 from monzo_py import MonzoTransactions
@@ -30,10 +32,14 @@ class Monzo(App):
     }
     transactions: reactive[MonzoTransactions | None] = reactive(None)
     db: reactive[DuckDBPyConnection | None] = reactive(None)
+    spreadsheet_id: reactive[str | None] = reactive(None)
+    credentials_path: reactive[Path | None] = reactive(None)
 
     ## DEFAULT METHODS
     def on_mount(self) -> None:
         self.theme = "nord"
+        self.spreadsheet_id = os.getenv("MONZO_SPREADSHEET_ID")
+        self.credentials_path = Path("~/.monzo/credentials.json").expanduser()
         self.push_screen("dashboard")
         self.fetch_monzo_transactions()
 
@@ -54,7 +60,25 @@ class Monzo(App):
     @work(exclusive=True, thread=True)
     def fetch_monzo_transactions(self) -> None:
         logger.info("Fetching monzo data.")
-        self.transactions = MonzoTransactions()
+        if not (
+            self.spreadsheet_id
+            and self.credentials_path
+            and self.credentials_path.exists()
+            and self.credentials_path.is_file()
+        ):
+            self.notify("Missing spreadsheet ID or credentials path")
+            return
+        self.transactions = MonzoTransactions(
+            spreadsheet_id=self.spreadsheet_id, credentials_path=self.credentials_path
+        )
+
+    def watch_spreadsheet_id(self, spreadsheet_id: str) -> None:
+        logger.info("New spreadsheet ID")
+        self.fetch_monzo_transactions()
+
+    def watch_credentials_path(self, credentials_path: Path) -> None:
+        logger.info("New credentials path")
+        self.fetch_monzo_transactions()
 
     def add_pay_days_table(self, db: DuckDBPyConnection) -> None:
         app = Path(__file__).parent
