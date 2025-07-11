@@ -17,7 +17,8 @@ class LastMonthCategoryChart(Container, DataWidget):
     """Widget to display the last month's category chart."""
 
     def compose(self) -> ComposeResult:
-        self.sql_query = "select category, sum(amount * -1) as total from transactions where amount < 0 and expenseMonthDate = (select max(expenseMonthDate) - interval 1 month from transactions) group by category order by total"
+        sub_query: str = "select distinct expenseMonth from transactions order by expenseMonthDate desc limit 2"
+        self.sql_query = f"pivot transactions on expenseMonth in ({sub_query}) using sum(amount * -1) group by category order by 3 desc limit 7"
         logger.debug("Composing LastMonthCategoryChart")
         self.border_title = "Spending Last Month"
         self.add_class("card")
@@ -28,10 +29,24 @@ class LastMonthCategoryChart(Container, DataWidget):
         plt = chart.plt
         plt.clear_data()
         chart.refresh()
-        categories = [row[0] for row in self.data]
-        amounts = [float(row[1]) for row in self.data]
+        if not self.data:
+            return
+        columns = self.pretty_columns()
+        categories, this_month, last_month = [], [], []
+        for row in self.data[::-1]:
+            if row[1] or row[2]:
+                categories.append(row[0])
+                this_month.append(float(row[1] or 0))
+                last_month.append(float(row[2] or 0))
+        labels = columns[-2:]
+        self.app.notify(str(columns))
         plt.clear_figure()
-        plt.bar(categories, amounts, orientation="horizontal")
+        plt.multiple_bar(
+            categories,
+            [this_month, last_month],
+            orientation="horizontal",
+            labels=labels,
+        )
         chart.refresh()
 
     def watch_data(self, data: list[tuple]) -> None:
