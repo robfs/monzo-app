@@ -36,8 +36,12 @@ class Monzo(App):
     SCREENS = {"dashboard": DashboardScreen, "settings_modal": SettingsModalScreen}
     transactions: reactive[MonzoTransactions | None] = reactive(None)
     db: reactive[DuckDBPyConnection | None] = reactive(None)
-    spreadsheet_id: reactive[str | None] = reactive(None)
-    credentials_path: reactive[Path | None] = reactive(None)
+    spreadsheet_id: reactive[str | None] = reactive(os.getenv("MONZO_SPREADSHEET_ID"))
+    credentials_path: reactive[Path] = reactive(
+        Path("~/.monzo/credentials.json").expanduser()
+    )
+    pay_day_type: reactive[str] = reactive("last")
+    pay_day: reactive[int] = reactive(int(os.getenv("MONZO_PAY_DAY", "31")))
 
     def compose(self) -> ComposeResult:
         yield Header()
@@ -46,8 +50,6 @@ class Monzo(App):
     ## DEFAULT METHODS
     def on_mount(self) -> None:
         self.theme = "nord"
-        self.spreadsheet_id = os.getenv("MONZO_SPREADSHEET_ID")
-        self.credentials_path = Path("~/.monzo/credentials.json").expanduser()
         self.push_screen("dashboard")
         self.fetch_monzo_transactions()
 
@@ -62,15 +64,22 @@ class Monzo(App):
         self.exit()
 
     def action_open_settings(self):
-        def save_settings(settings: tuple[bool, str, Path]) -> None:
-            to_save, spreadsheet_id, credentials_path = settings
+        def save_settings(settings: tuple[bool, str, Path, str, int]) -> None:
+            to_save, spreadsheet_id, credentials_path, pay_day_type, pay_day = settings
             if to_save:
                 self.spreadsheet_id = spreadsheet_id
                 self.credentials_path = credentials_path
+                self.pay_day_type = pay_day_type
+                self.pay_day = pay_day
                 self.notify("Settings saved")
 
         self.push_screen(
-            SettingsModalScreen(self.spreadsheet_id, self.credentials_path),
+            SettingsModalScreen(
+                self.spreadsheet_id,
+                self.credentials_path,
+                self.pay_day_type,
+                self.pay_day,
+            ),
             save_settings,
         )
 
@@ -94,6 +103,10 @@ class Monzo(App):
                 spreadsheet_id=self.spreadsheet_id,
                 credentials_path=self.credentials_path,
             )
+            db = self.transactions.duck_db()
+            self.add_pay_days_table(db)
+            self.add_pay_days_to_transactions(db)
+            self.db = db
         except Exception as e:
             self.notify(f"Error fetching Monzo transactions: {e}", severity="error")
             return
@@ -106,6 +119,11 @@ class Monzo(App):
         logger.info("New credentials path")
         self.fetch_monzo_transactions()
 
+    def watch_pay_day(self, pay_day: int) -> None:
+        logger.info("New pay day")
+        self.get_screen("dashboard").pay_day = pay_day
+        self.fetch_monzo_transactions()
+
     def action_refresh_data(self):
         logger.info("Refreshing data")
         self.fetch_monzo_transactions()
@@ -115,7 +133,7 @@ class Monzo(App):
         sql = app / "sql_scripts"
         with open(sql / "add_pay_days_table.sql") as f:
             sql = f.read()
-        db.sql(sql, params=[25])
+        db.sql(sql, params=[self.pay_day])
 
     def add_pay_days_to_transactions(self, db: DuckDBPyConnection) -> None:
         app = Path(__file__).parent
@@ -124,12 +142,9 @@ class Monzo(App):
             sql = f.read()
         db.sql(sql)
 
-    def watch_transactions(self, transactions: MonzoTransactions | None) -> None:
+    def watch_db(self, transactions: MonzoTransactions | None) -> None:
         logger.info("Transactions updated.")
         if transactions:
-            self.db = transactions.duck_db()
-            self.add_pay_days_table(self.db)
-            self.add_pay_days_to_transactions(self.db)
             self.post_transactions_available()
 
     def post_transactions_available(self) -> None:

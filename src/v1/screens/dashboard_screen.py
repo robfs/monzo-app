@@ -27,6 +27,8 @@ logger = logging.getLogger(__name__)
 class DashboardScreen(Screen):
     """Dashboard screen."""
 
+    pay_day = reactive(31)
+
     def compose(self) -> ComposeResult:
         container = Container(
             Logo(),
@@ -53,3 +55,9 @@ class DashboardScreen(Screen):
         self.query_one(TopCategoriesTable).fetch_data()
         self.query_one(MonthlySpendChart).fetch_data()
         self.query_one(LastMonthCategoryChart).fetch_data()
+
+    def watch_pay_day(self, pay_day: int) -> None:
+        try:
+            self.query_one(PayDayCalendar).pay_day = pay_day
+        except Exception:
+            logger.debug("Pay day set before mounting")

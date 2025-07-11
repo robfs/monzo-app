@@ -63,7 +63,7 @@ class SettingsErrorScreen(ModalScreen):
         yield container
 
 
-class SettingsModalScreen(ModalScreen[tuple[bool, str, Path]]):
+class SettingsModalScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
     """Settings screen for the Monzo TUI."""
 
     BINDINGS = [("escape", "cancel", "Cancel"), ("enter", "save", "Save")]
@@ -111,7 +111,7 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path]]):
 
     def action_cancel(self) -> None:
         """Cancel action triggered by ESC key."""
-        self.dismiss((False, "", Path("")))
+        self.dismiss((False, "", Path(""), "last", 31))
 
     def action_save(self) -> None:
         """Save action triggered by ENTER key."""
@@ -119,8 +119,12 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path]]):
         credentials_path: Path = Path(
             self.query_one(CredentialsPathInput).value
         ).expanduser()
+        pay_day_type: str = self.query_one(PayDayTypeSelect).value
+        pay_day_value: int = int(self.query_one(PayDayInput).value)
 
-        self.dismiss((True, spreadsheet_id, credentials_path))
+        self.dismiss(
+            (True, spreadsheet_id, credentials_path, pay_day_type, pay_day_value)
+        )
 
     def on_key(self, event: Key) -> None:
         """Handle key events, specifically Enter key when inputs are focused."""
