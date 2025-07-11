@@ -18,6 +18,7 @@ class DataWidget(Widget):
 
     data: reactive[list[tuple]] = reactive([])
     sql_query: reactive[str] = reactive("select 1;")
+    sql_params: reactive[list] = reactive([])
     _column_names: reactive[list[str]] = reactive([])
 
     @property
@@ -26,24 +27,28 @@ class DataWidget(Widget):
             return self.app.db
         logger.error("Database connection not available")
 
-    def run_query(self, query: str) -> list[tuple]:
+    def run_query(self, query: str, *args, **kwargs) -> list[tuple]:
         if not self.db:
             return []
-        return self.db.sql(query).fetchall()
+        return self.db.sql(query, *args, **kwargs).fetchall()
+
+    # def watch_sql_params(self, params: list):
+    #     if params:
+    #         self.fetch_data()
 
     def fetch_data(self) -> None:
         logger.info(f"Updating data on {self.__class__.__name__}")
-        self.data = self.run_query(self.sql_query)
+        self.data = self.run_query(self.sql_query, params=self.sql_params)
         if not self.data:
             logger.info(f"No data returned for {self.__class__.__name__}")
 
-    def query_columns(self, query: str) -> list[str]:
+    def query_columns(self, query: str, *args, **kwargs) -> list[str]:
         if not self.db:
             return []
-        return self.db.sql(query).columns
+        return self.db.sql(query, *args, **kwargs).columns
 
     def fetch_column_names(self) -> None:
-        self._column_names = self.query_columns(self.sql_query)
+        self._column_names = self.query_columns(self.sql_query, params=self.sql_params)
 
     @property
     def column_names(self) -> list[str]:
