@@ -55,13 +55,11 @@ class PayDayCalendar(Container):
         return cal
 
     def highlight_all(self, cal: str, tag: str) -> str:
-        cal = re.sub(r"(\s)1(\s)", rf"\1[{tag}]\2", cal)
+        cal = re.sub(r"(\s1\s)", rf"[{tag}]\1", cal)
         return cal
 
     def highlight_pay_day(self, cal: str, tag: str) -> str:
-        cal = re.sub(
-            rf"(\s)({self.pay_date.day})(\s)", rf"\1[/][{tag}]\2[/{tag}]\3", cal
-        )
+        cal = re.sub(rf"(\s{self.pay_date.day}\s)", rf"[/][{tag}]\1[/{tag}]", cal)
         return cal
 
     def top_calendar(self, tag: str) -> str:
