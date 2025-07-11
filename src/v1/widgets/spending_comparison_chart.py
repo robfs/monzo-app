@@ -8,12 +8,12 @@ from textual_plotext import PlotextPlot
 
 from .data_widget import DataWidget
 
-__all__ = ["LastMonthCategoryChart"]
+__all__ = ["SpendingComparisonChart"]
 
 logger = logging.getLogger(__name__)
 
 
-class LastMonthCategoryChart(Container, DataWidget):
+class SpendingComparisonChart(Container, DataWidget):
     """Widget to display the last month's category chart."""
 
     def compose(self) -> ComposeResult:
@@ -39,7 +39,6 @@ class LastMonthCategoryChart(Container, DataWidget):
                 this_month.append(float(row[1] or 0))
                 last_month.append(float(row[2] or 0))
         labels = columns[-2:]
-        self.app.notify(str(columns))
         plt.clear_figure()
         plt.multiple_bar(
             categories,

@@ -5,16 +5,17 @@ import logging
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.message import Message
+from textual.reactive import reactive
 from textual.screen import Screen
 from textual.widgets import Footer
 from textual.widgets import Header
 
 from ..widgets import BalanceCard
-from ..widgets import LastMonthCategoryChart
 from ..widgets import LatestTransactionsTable
 from ..widgets import Logo
 from ..widgets import MonthlySpendChart
 from ..widgets import PayDayCalendar
+from ..widgets import SpendingComparisonChart
 from ..widgets import TopCategoriesTable
 from ..widgets import TopMerchantsTable
 
@@ -32,7 +33,7 @@ class DashboardScreen(Screen):
     def compose(self) -> ComposeResult:
         container = Container(
             Logo(),
-            LastMonthCategoryChart(),
+            SpendingComparisonChart(),
             MonthlySpendChart(),
             BalanceCard(),
             TopCategoriesTable(),
@@ -48,13 +49,13 @@ class DashboardScreen(Screen):
         yield Header()
 
     def on_monzo_transactions_available(self, message: Message) -> None:
-        self.app.notify(str(message), severity="information")
+        self.app.notify(f"{self.__class__.__name__}: {message}", severity="information")
         self.query_one(BalanceCard).fetch_data()
         self.query_one(LatestTransactionsTable).fetch_data()
         self.query_one(TopMerchantsTable).fetch_data()
         self.query_one(TopCategoriesTable).fetch_data()
         self.query_one(MonthlySpendChart).fetch_data()
-        self.query_one(LastMonthCategoryChart).fetch_data()
+        self.query_one(SpendingComparisonChart).fetch_data()
 
     def watch_pay_day(self, pay_day: int) -> None:
         try:
