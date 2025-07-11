@@ -8,11 +8,15 @@ from duckdb import DuckDBPyConnection
 from monzo_py import MonzoTransactions
 from textual import work
 from textual.app import App
+from textual.app import ComposeResult
 from textual.logging import TextualHandler
 from textual.message import Message
 from textual.reactive import reactive
+from textual.widgets import Footer
+from textual.widgets import Header
 
 from .screens import DashboardScreen
+from .screens import SettingsModalScreen
 
 logging.basicConfig(level=logging.DEBUG, handlers=[TextualHandler()])
 
@@ -25,15 +29,19 @@ class Monzo(App):
     CSS_PATH = "assets/styles.tcss"
     BINDINGS = [
         ("D", "push_screen('dashboard')", "Dashboard"),
+        ("r", "refresh_data", "Refresh"),
+        ("s", "open_settings", "Settings"),
         ("q", "request_quit", "Quit"),
     ]
-    SCREENS = {
-        "dashboard": DashboardScreen,
-    }
+    SCREENS = {"dashboard": DashboardScreen, "settings_modal": SettingsModalScreen}
     transactions: reactive[MonzoTransactions | None] = reactive(None)
     db: reactive[DuckDBPyConnection | None] = reactive(None)
     spreadsheet_id: reactive[str | None] = reactive(None)
     credentials_path: reactive[Path | None] = reactive(None)
+
+    def compose(self) -> ComposeResult:
+        yield Header()
+        yield Footer()
 
     ## DEFAULT METHODS
     def on_mount(self) -> None:
@@ -53,6 +61,19 @@ class Monzo(App):
     def action_request_quit(self):
         self.exit()
 
+    def action_open_settings(self):
+        def save_settings(settings: tuple[bool, str, Path]) -> None:
+            to_save, spreadsheet_id, credentials_path = settings
+            if to_save:
+                self.spreadsheet_id = spreadsheet_id
+                self.credentials_path = credentials_path
+                self.notify("Settings saved")
+
+        self.push_screen(
+            SettingsModalScreen(self.spreadsheet_id, self.credentials_path),
+            save_settings,
+        )
+
     class TransactionsAvailable(Message):
         """Message sent when transactions are available."""
 
@@ -66,11 +87,16 @@ class Monzo(App):
             and self.credentials_path.exists()
             and self.credentials_path.is_file()
         ):
-            self.notify("Missing spreadsheet ID or credentials path")
+            self.notify("Missing spreadsheet ID or credentials path", severity="error")
             return
-        self.transactions = MonzoTransactions(
-            spreadsheet_id=self.spreadsheet_id, credentials_path=self.credentials_path
-        )
+        try:
+            self.transactions = MonzoTransactions(
+                spreadsheet_id=self.spreadsheet_id,
+                credentials_path=self.credentials_path,
+            )
+        except Exception as e:
+            self.notify(f"Error fetching Monzo transactions: {e}", severity="error")
+            return
 
     def watch_spreadsheet_id(self, spreadsheet_id: str) -> None:
         logger.info("New spreadsheet ID")
@@ -78,6 +104,10 @@ class Monzo(App):
 
     def watch_credentials_path(self, credentials_path: Path) -> None:
         logger.info("New credentials path")
+        self.fetch_monzo_transactions()
+
+    def action_refresh_data(self):
+        logger.info("Refreshing data")
         self.fetch_monzo_transactions()
 
     def add_pay_days_table(self, db: DuckDBPyConnection) -> None:

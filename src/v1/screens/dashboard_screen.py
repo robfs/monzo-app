@@ -6,6 +6,8 @@ from textual.app import ComposeResult
 from textual.containers import Container
 from textual.message import Message
 from textual.screen import Screen
+from textual.widgets import Footer
+from textual.widgets import Header
 
 from ..widgets import BalanceCard
 from ..widgets import LastMonthCategoryChart
@@ -28,9 +30,9 @@ class DashboardScreen(Screen):
     def compose(self) -> ComposeResult:
         container = Container(
             Logo(),
+            LastMonthCategoryChart(),
             MonthlySpendChart(),
             BalanceCard(),
-            LastMonthCategoryChart(),
             TopCategoriesTable(),
             TopMerchantsTable(),
             PayDayCalendar(),
@@ -40,6 +42,8 @@ class DashboardScreen(Screen):
         container.border_title = "Dashboard"
         container.border_subtitle = "Summary analytics screen"
         yield container
+        yield Footer()
+        yield Header()
 
     def on_monzo_transactions_available(self, message: Message) -> None:
         self.app.notify(str(message), severity="information")
