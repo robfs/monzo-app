@@ -26,6 +26,12 @@ ModalScreen {
     }
 }
 
+ExclusionsModalScreen {
+    Container {
+        height: 25;
+    }
+}
+
 SettingsModalScreen {
     Container {
         height: 22;

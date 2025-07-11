@@ -82,22 +82,18 @@ class SettingsModalScreen(ModalScreen[bool]):
             ("Specific day of the month", "specific"),
         ]
         container = Container(
-            SpreadsheetIdInput(),
-            CredentialsPathInput(),
-            PayDayTypeSelect(pay_day_type_options),
-            PayDayInput(type="integer"),
+            SpreadsheetIdInput(self.spreadsheet_id),
+            CredentialsPathInput(self._credentials_path),
+            PayDayTypeSelect(
+                pay_day_type_options, allow_blank=False, value=self.pay_day_type
+            ),
+            PayDayInput(str(self.pay_day), type="integer"),
         )
         container.border_title = "Settings"
         container.border_subtitle = "Press 'Enter' to save, 'Esc' to cancel"
         container.add_class("screen")
         yield Footer()
         yield container
-
-    def on_mount(self) -> None:
-        self.query_one(SpreadsheetIdInput).value = self.spreadsheet_id
-        self.query_one(CredentialsPathInput).value = str(self.credentials_path)
-        self.query_one(PayDayTypeSelect).value = self.pay_day_type
-        self.query_one(PayDayInput).value = str(self.pay_day)
 
     @property
     def credentials_path(self) -> Path:

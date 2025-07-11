@@ -17,7 +17,7 @@ class LatestTransactionsTable(Container, DataWidget):
     """Widget to display the latest transactions."""
 
     def compose(self) -> ComposeResult:
-        self.sql_query = "select expenseMonth, date, time, name, category, amount * -1 as amount from transactions order by date desc, time desc limit 100"
+        self.sql_query = "select expenseMonth, date, time, name, category, amount * -1 as amount from transactions order by date desc, time desc"
         logger.debug("Composing LatestTransactionsTable")
         self.border_title = "Latest Transactions"
         self.add_class("card")

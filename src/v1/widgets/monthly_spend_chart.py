@@ -4,6 +4,7 @@ import logging
 
 from textual.app import ComposeResult
 from textual.containers import Container
+from textual.reactive import reactive
 from textual_plotext import PlotextPlot
 
 from .data_widget import DataWidget
@@ -16,8 +17,10 @@ logger = logging.getLogger(__name__)
 class MonthlySpendChart(Container, DataWidget):
     """Widget to display the monthly spend chart."""
 
+    exclusions: reactive[tuple] = reactive(())
+
     def compose(self) -> ComposeResult:
-        self.sql_query = "select expenseMonth, sum(amount * -1), expenseMonthDate as total from transactions where amount < 0 group by expenseMonth, expenseMonthDate order by expenseMonthDate"
+        self.sql_query = "select expenseMonth, sum(amount * -1), expenseMonthDate as total from transactions where category not in ? and amount < 0 group by expenseMonth, expenseMonthDate order by expenseMonthDate"
         logger.debug("Composing MonthlySpendChart")
         self.border_title = "Monthly Spend Chart"
         self.add_class("card")
@@ -31,8 +34,11 @@ class MonthlySpendChart(Container, DataWidget):
         months = [row[0] for row in self.data[-12:]]
         amounts = [float(row[1]) for row in self.data[-12:]]
         plt.clear_figure()
-        plt.bar(months, amounts)
+        plt.bar(months, amounts, width=5 / 7)
         chart.refresh()
+
+    def watch_exclusions(self, exclusions: tuple) -> None:
+        self.sql_params = [exclusions]
 
     def watch_data(self, data: list[tuple]) -> None:
         logger.info("Updating Monthly Spend")

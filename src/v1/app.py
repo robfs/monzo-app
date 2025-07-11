@@ -17,6 +17,7 @@ from textual.widgets import Footer
 from textual.widgets import Header
 
 from .screens import DashboardScreen
+from .screens import ExclusionsModalScreen
 from .screens import SettingsModalScreen
 
 logging.basicConfig(level=logging.DEBUG, handlers=[TextualHandler()])
@@ -31,10 +32,15 @@ class Monzo(App):
     BINDINGS = [
         ("D", "push_screen('dashboard')", "Dashboard"),
         ("r", "refresh_data", "Refresh"),
+        ("e", "push_screen('exclusions')", "Exclusions"),
         ("s", "open_settings", "Settings"),
         ("q", "request_quit", "Quit"),
     ]
-    SCREENS = {"dashboard": DashboardScreen, "settings": SettingsModalScreen}
+    SCREENS = {
+        "dashboard": DashboardScreen,
+        "exclusions": ExclusionsModalScreen,
+        "settings": SettingsModalScreen,
+    }
 
     transactions: reactive[MonzoTransactions | None] = reactive(None)
     db: reactive[DuckDBPyConnection | None] = reactive(None)
