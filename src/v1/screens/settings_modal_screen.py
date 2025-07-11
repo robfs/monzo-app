@@ -3,6 +3,7 @@
 import logging
 from pathlib import Path
 
+from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.events import Key
@@ -32,6 +33,20 @@ class CredentialsPathInput(Input):
         self.border_title = "Credentials Path"
 
 
+class PayDayTypeSelect(Select):
+    """Select field for the payday."""
+
+    def on_mount(self) -> None:
+        self.border_title = "Payday Type"
+
+
+class PayDayInput(Input):
+    """Input field for the payday."""
+
+    def on_mount(self) -> None:
+        self.border_title = "Payday"
+
+
 class SettingsErrorScreen(ModalScreen):
     """Screen for displaying settings errors."""
 
@@ -57,16 +72,32 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path]]):
         self,
         spreadsheet_id: str = "",
         credentials_path: Path = Path(""),
+        pay_day_type: str = "first",
+        pay_day: int = 1,
         *args,
         **kwargs,
     ):
         self.existing_spreadsheet_id = spreadsheet_id
         self.existing_credentials_path = credentials_path
+        self.existing_pay_day_type = pay_day_type
+        self.existing_pay_day = pay_day
         super().__init__(*args, **kwargs)
 
     def compose(self) -> ComposeResult:
+        pay_day_type_options = [
+            ("First day of the month", "first"),
+            ("Last day of the month", "last"),
+            ("Specific day of the month", "specific"),
+        ]
         container = Container(
-            self.spreadsheet_id_input(), self.credentials_path_input()
+            SpreadsheetIdInput(self.existing_spreadsheet_id),
+            CredentialsPathInput(self.credentials_string),
+            PayDayTypeSelect(
+                pay_day_type_options,
+                value=self.existing_pay_day_type,
+                allow_blank=False,
+            ),
+            PayDayInput(str(self.existing_pay_day), type="integer"),
         )
         container.border_title = "Settings"
         container.border_subtitle = "Press 'Enter' to save, 'Esc' to cancel"
@@ -78,28 +109,16 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path]]):
     def credentials_string(self) -> str:
         return str(self.existing_credentials_path)
 
-    def spreadsheet_id_input(self):
-        return SpreadsheetIdInput(self.existing_spreadsheet_id)
-
-    def credentials_path_input(self):
-        return CredentialsPathInput(self.credentials_string)
-
-    @property
-    def spreadsheet_id(self) -> SpreadsheetIdInput:
-        return self.query_one(SpreadsheetIdInput)
-
-    @property
-    def credentials_path(self) -> CredentialsPathInput:
-        return self.query_one(CredentialsPathInput)
-
     def action_cancel(self) -> None:
         """Cancel action triggered by ESC key."""
         self.dismiss((False, "", Path("")))
 
     def action_save(self) -> None:
         """Save action triggered by ENTER key."""
-        spreadsheet_id: str = self.spreadsheet_id.value
-        credentials_path: Path = Path(self.credentials_path.value).expanduser()
+        spreadsheet_id: str = self.query_one(SpreadsheetIdInput).value
+        credentials_path: Path = Path(
+            self.query_one(CredentialsPathInput).value
+        ).expanduser()
 
         self.dismiss((True, spreadsheet_id, credentials_path))
 
@@ -110,3 +129,17 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path]]):
                 return
             self.action_save()
             event.prevent_default()
+
+    @on(Select.Changed, "PayDayTypeSelect")
+    def select_pay_day_type(self, event: Select.Changed) -> None:
+        """Handle pay day type change event."""
+        pay_day_input = self.query_one(PayDayInput)
+        if event.value == "last":
+            pay_day_input.value = "31"
+            pay_day_input.disabled = True
+        elif event.value == "first":
+            pay_day_input.value = "1"
+            pay_day_input.disabled = True
+        elif event.value == "specific":
+            pay_day_input.disabled = False
+            pay_day_input.focus()

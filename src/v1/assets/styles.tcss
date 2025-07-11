@@ -43,6 +43,12 @@ SettingsModalScreen {
             height: 5;
         }
 
+        Select {
+            border: round $primary;
+            border-title-style: bold;
+            height: 5;
+        }
+
         SpreadsheetIdInput {column-span: 2}
         CredentialsPathInput {column-span: 2}
     }
