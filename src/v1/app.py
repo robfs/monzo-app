@@ -105,19 +105,6 @@ class Monzo(App):
         settings_screen = self.get_screen("settings")
         return getattr(settings_screen, setting_name)
 
-    # def watch_spreadsheet_id(self, spreadsheet_id: str) -> None:
-    #     logger.info("New spreadsheet ID")
-    #     self.fetch_monzo_transactions()
-
-    # def watch_credentials_path(self, credentials_path: Path) -> None:
-    #     logger.info("New credentials path")
-    #     self.fetch_monzo_transactions()
-
-    # def watch_pay_day(self, pay_day: int) -> None:
-    #     logger.info("New pay day")
-    #     self.get_screen("dashboard").pay_day = pay_day
-    #     self.fetch_monzo_transactions()
-
     def action_refresh_data(self):
         logger.info("Refreshing data")
         self.fetch_monzo_transactions()
