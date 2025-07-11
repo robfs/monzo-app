@@ -51,12 +51,12 @@ class DashboardScreen(Screen):
 
     def on_monzo_transactions_available(self, message: Message) -> None:
         self.app.notify(f"{self.__class__.__name__}: {message}", severity="information")
-        self.query_one(BalanceCard).fetch_data()
-        self.query_one(LatestTransactionsTable).fetch_data()
-        self.query_one(TopMerchantsTable).fetch_data()
-        self.query_one(TopCategoriesTable).fetch_data()
-        self.query_one(MonthlySpendChart).fetch_data()
-        self.query_one(SpendingComparisonChart).fetch_data()
+        self.query_one(BalanceCard).update()
+        self.query_one(LatestTransactionsTable).update()
+        self.query_one(TopMerchantsTable).update()
+        self.query_one(TopCategoriesTable).update()
+        self.query_one(MonthlySpendChart).update()
+        self.query_one(SpendingComparisonChart).update()
 
     def watch_pay_day(self, pay_day: int) -> None:
         try:

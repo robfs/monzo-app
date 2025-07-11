@@ -36,6 +36,11 @@ class DataWidget(Widget):
     #     if params:
     #         self.fetch_data()
 
+    def update(self, /, **kwargs) -> None:
+        for key, value in kwargs.items():
+            setattr(self, key, value)
+        self.fetch_data()
+
     def fetch_data(self) -> None:
         logger.info(f"Updating data on {self.__class__.__name__}")
         self.data = self.run_query(self.sql_query, params=self.sql_params)
