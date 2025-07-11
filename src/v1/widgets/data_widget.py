@@ -25,7 +25,6 @@ class DataWidget(Widget):
         if self.app.db:
             return self.app.db
         logger.error("Database connection not available")
-        self.app.notify("Database connection not available")
 
     def run_query(self, query: str) -> list[tuple]:
         if not self.db:
