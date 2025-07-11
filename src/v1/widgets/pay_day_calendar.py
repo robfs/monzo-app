@@ -3,6 +3,7 @@
 import calendar
 import datetime
 import logging
+import os
 import re
 
 from textual.app import ComposeResult
@@ -20,7 +21,7 @@ logger = logging.getLogger(__name__)
 class PayDayCalendar(Container):
     """Widget to display the pay day calendar."""
 
-    pay_day = reactive(31)
+    pay_day = reactive(int(os.getenv("MONZO_PAY_DAY", "31")))
     pay_date = reactive(datetime.date.today())
     today = reactive(datetime.date.today())
 
@@ -30,7 +31,6 @@ class PayDayCalendar(Container):
 
     def on_mount(self) -> None:
         cal = calendar.month(2025, 7)
-        # self._render_markup = False
         self.border_title = "Pay Day"
         self.update(cal)
 

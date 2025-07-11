@@ -1,6 +1,7 @@
 """Module defining the dashboard screen."""
 
 import logging
+import os
 
 from textual.app import ComposeResult
 from textual.containers import Container
@@ -28,7 +29,7 @@ logger = logging.getLogger(__name__)
 class DashboardScreen(Screen):
     """Dashboard screen."""
 
-    pay_day = reactive(31)
+    pay_day = reactive(int(os.getenv("MONZO_PAY_DAY", "31")))
 
     def compose(self) -> ComposeResult:
         container = Container(

@@ -1,12 +1,14 @@
 """Settings screen for the Monzo TUI."""
 
 import logging
+import os
 from pathlib import Path
 
 from textual import on
 from textual.app import ComposeResult
 from textual.containers import Container
 from textual.events import Key
+from textual.reactive import reactive
 from textual.screen import ModalScreen
 from textual.widgets import Footer
 from textual.widgets import Input
@@ -63,25 +65,15 @@ class SettingsErrorScreen(ModalScreen):
         yield container
 
 
-class SettingsModalScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
+class SettingsModalScreen(ModalScreen[bool]):
     """Settings screen for the Monzo TUI."""
 
     BINDINGS = [("escape", "cancel", "Cancel"), ("enter", "save", "Save")]
 
-    def __init__(
-        self,
-        spreadsheet_id: str = "",
-        credentials_path: Path = Path(""),
-        pay_day_type: str = "first",
-        pay_day: int = 1,
-        *args,
-        **kwargs,
-    ):
-        self.existing_spreadsheet_id = spreadsheet_id
-        self.existing_credentials_path = credentials_path
-        self.existing_pay_day_type = pay_day_type
-        self.existing_pay_day = pay_day
-        super().__init__(*args, **kwargs)
+    spreadsheet_id: reactive[str | None] = reactive(os.getenv("MONZO_SPREADSHEET_ID"))
+    _credentials_path: reactive[str] = reactive("~/.monzo/credentials.json")
+    pay_day_type: reactive[str] = reactive("specific")
+    pay_day: reactive[int] = reactive(int(os.getenv("MONZO_PAY_DAY", "31")))
 
     def compose(self) -> ComposeResult:
         pay_day_type_options = [
@@ -90,14 +82,10 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
             ("Specific day of the month", "specific"),
         ]
         container = Container(
-            SpreadsheetIdInput(self.existing_spreadsheet_id),
-            CredentialsPathInput(self.credentials_string),
-            PayDayTypeSelect(
-                pay_day_type_options,
-                value=self.existing_pay_day_type,
-                allow_blank=False,
-            ),
-            PayDayInput(str(self.existing_pay_day), type="integer"),
+            SpreadsheetIdInput(),
+            CredentialsPathInput(),
+            PayDayTypeSelect(pay_day_type_options),
+            PayDayInput(type="integer"),
         )
         container.border_title = "Settings"
         container.border_subtitle = "Press 'Enter' to save, 'Esc' to cancel"
@@ -105,26 +93,28 @@ class SettingsModalScreen(ModalScreen[tuple[bool, str, Path, str, int]]):
         yield Footer()
         yield container
 
+    def on_mount(self) -> None:
+        self.query_one(SpreadsheetIdInput).value = self.spreadsheet_id
+        self.query_one(CredentialsPathInput).value = str(self.credentials_path)
+        self.query_one(PayDayTypeSelect).value = self.pay_day_type
+        self.query_one(PayDayInput).value = str(self.pay_day)
+
     @property
-    def credentials_string(self) -> str:
-        return str(self.existing_credentials_path)
+    def credentials_path(self) -> Path:
+        return Path(self._credentials_path).expanduser()
 
     def action_cancel(self) -> None:
         """Cancel action triggered by ESC key."""
-        self.dismiss((False, "", Path(""), "last", 31))
+        self.dismiss(False)
 
     def action_save(self) -> None:
         """Save action triggered by ENTER key."""
-        spreadsheet_id: str = self.query_one(SpreadsheetIdInput).value
-        credentials_path: Path = Path(
-            self.query_one(CredentialsPathInput).value
-        ).expanduser()
-        pay_day_type: str = self.query_one(PayDayTypeSelect).value
-        pay_day_value: int = int(self.query_one(PayDayInput).value)
+        self.spreadsheet_id = self.query_one(SpreadsheetIdInput).value
+        self._credentials_path = self.query_one(CredentialsPathInput).value
+        self.pay_day_type = self.query_one(PayDayTypeSelect).value
+        self.pay_day = int(self.query_one(PayDayInput).value)
 
-        self.dismiss(
-            (True, spreadsheet_id, credentials_path, pay_day_type, pay_day_value)
-        )
+        self.dismiss(True)
 
     def on_key(self, event: Key) -> None:
         """Handle key events, specifically Enter key when inputs are focused."""
