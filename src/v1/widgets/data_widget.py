@@ -44,7 +44,11 @@ class DataWidget(Widget):
 
     def fetch_data(self) -> None:
         logger.info(f"Updating data on {self.__class__.__name__}")
-        self.data = self.run_query(self.sql_query, params=self.sql_params)
+        params = {}
+        for name, param in self.sql_params.items():
+            if f"${name}" in self.sql_query:
+                params[name] = param
+        self.data = self.run_query(self.sql_query, params=params)
         if not self.data:
             logger.info(f"No data returned for {self.__class__.__name__}")
 
@@ -54,7 +58,11 @@ class DataWidget(Widget):
         return self.db.sql(query, *args, **kwargs).columns
 
     def fetch_column_names(self) -> None:
-        self._column_names = self.query_columns(self.sql_query, params=self.sql_params)
+        params = {}
+        for name, param in self.sql_params.items():
+            if f"${name}" in self.sql_query:
+                params[name] = param
+        self._column_names = self.query_columns(self.sql_query, params=params)
 
     @property
     def column_names(self) -> list[str]:
