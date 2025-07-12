@@ -2,6 +2,7 @@
 
 import logging
 import re
+from typing import Any
 
 from duckdb import DuckDBPyConnection
 from textual.reactive import reactive
@@ -18,7 +19,7 @@ class DataWidget(Widget):
 
     data: reactive[list[tuple]] = reactive([])
     sql_query: reactive[str] = reactive("select 1;")
-    sql_params: reactive[list] = reactive([])
+    sql_params: reactive[dict[str, Any]] = reactive({})
     _column_names: reactive[list[str]] = reactive([])
 
     @property

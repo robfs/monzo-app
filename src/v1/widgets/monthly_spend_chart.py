@@ -20,7 +20,7 @@ class MonthlySpendChart(Container, DataWidget):
     exclusions: reactive[tuple] = reactive(())
 
     def compose(self) -> ComposeResult:
-        self.sql_query = "select expenseMonth, sum(amount * -1), expenseMonthDate as total from transactions where category not in ? and amount < 0 group by expenseMonth, expenseMonthDate order by expenseMonthDate"
+        self.sql_query = "select expenseMonth, sum(amount * -1), expenseMonthDate as total from transactions where category not in $exclusions and amount < 0 group by expenseMonth, expenseMonthDate order by expenseMonthDate"
         logger.debug("Composing MonthlySpendChart")
         self.border_title = "Monthly Spend Chart"
         self.add_class("card")
@@ -38,7 +38,7 @@ class MonthlySpendChart(Container, DataWidget):
         chart.refresh()
 
     def watch_exclusions(self, exclusions: tuple) -> None:
-        self.sql_params = [exclusions]
+        self.sql_params["exclusions"] = exclusions
 
     def watch_data(self, data: list[tuple]) -> None:
         logger.info("Updating Monthly Spend")

@@ -22,14 +22,14 @@ class SpendingComparisonChart(Container, DataWidget):
     def compose(self) -> ComposeResult:
         sub_query: str = "select distinct expenseMonth from transactions order by expenseMonthDate desc limit 2"
         cte = f"pivot transactions on expenseMonth in ({sub_query}) using sum(amount * -1) group by category order by 3 desc"
-        self.sql_query = f"with categories as ({cte}) select * from categories where category not in ?"
+        self.sql_query = f"with categories as ({cte}) select * from categories where category not in $exclusions"
         logger.debug("Composing LastMonthCategoryChart")
         self.border_title = "Spending Last Month"
         self.add_class("card")
         yield PlotextPlot()
 
     def watch_exclusions(self, exclusions: list[str]) -> None:
-        self.sql_params = [tuple(exclusions)]
+        self.sql_params["exclusions"] = exclusions
 
     def update_last_month(self) -> None:
         chart = self.query_one(PlotextPlot)
