@@ -21,7 +21,7 @@ class TopMerchantsTable(Container, DataWidget):
         logger.debug("Composing TopMerchantsTable")
         self.border_title = "Top Merchants"
         self.add_class("card")
-        yield DataTable()
+        yield DataTable(zebra_stripes=True, cursor_type="row")
 
     def update_merchants(self) -> None:
         table = self.query_one(DataTable)

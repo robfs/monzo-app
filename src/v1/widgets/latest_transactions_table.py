@@ -21,7 +21,7 @@ class LatestTransactionsTable(Container, DataWidget):
         logger.debug("Composing LatestTransactionsTable")
         self.border_title = "Latest Transactions"
         self.add_class("card")
-        yield DataTable()
+        yield DataTable(zebra_stripes=True, cursor_type="row")
 
     def update_transactions(self) -> None:
         table = self.query_one(DataTable)
