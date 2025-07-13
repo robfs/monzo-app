@@ -21,7 +21,9 @@ class TopCategoriesTable(Container, DataWidget):
         logger.debug("Composing TopCategoriesTable")
         self.border_title = "Top Categories"
         self.add_class("card")
-        yield DataTable(zebra_stripes=True, cursor_type="row")
+        yield DataTable(
+            zebra_stripes=True, cursor_type="row", id="top-categories-table"
+        )
 
     def update_categories(self) -> None:
         table = self.query_one(DataTable)
