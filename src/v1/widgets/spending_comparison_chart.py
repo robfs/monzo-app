@@ -29,7 +29,7 @@ class SpendingComparisonChart(Container, DataWidget):
         yield PlotextPlot()
 
     def watch_exclusions(self, exclusions: list[str]) -> None:
-        self.sql_params["exclusions"] = exclusions
+        self.sql_params = {"exclusions": exclusions}
 
     def update_last_month(self) -> None:
         chart = self.query_one(PlotextPlot)

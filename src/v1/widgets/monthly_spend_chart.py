@@ -38,7 +38,7 @@ class MonthlySpendChart(Container, DataWidget):
         chart.refresh()
 
     def watch_exclusions(self, exclusions: tuple) -> None:
-        self.sql_params["exclusions"] = exclusions
+        self.sql_params = {"exclusions": exclusions}
 
     def watch_data(self, data: list[tuple]) -> None:
         logger.info("Updating Monthly Spend")
