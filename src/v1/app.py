@@ -1,7 +1,6 @@
 """Main app file."""
 
 import logging
-import os
 from pathlib import Path
 from typing import Literal
 
@@ -17,6 +16,7 @@ from textual.widgets import Footer
 from textual.widgets import Header
 
 from .screens import DashboardScreen
+from .screens import DetailModalScreen
 from .screens import ExclusionsModalScreen
 from .screens import SettingsModalScreen
 
@@ -40,6 +40,7 @@ class Monzo(App):
         "dashboard": DashboardScreen,
         "exclusions": ExclusionsModalScreen,
         "settings": SettingsModalScreen,
+        "detail": DetailModalScreen,
     }
 
     transactions: reactive[MonzoTransactions | None] = reactive(None)
