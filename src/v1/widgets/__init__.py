@@ -1,6 +1,7 @@
 """Module containing custom widget."""
 
 from .balance_card import BalanceCard
+from .data_widget import DataWidget
 from .latest_transactions_table import LatestTransactionsTable
 from .logo import Logo
 from .monthly_spend_chart import MonthlySpendChart
@@ -11,6 +12,7 @@ from .top_merchants_table import TopMerchantsTable
 
 __all__ = [
     "BalanceCard",
+    "DataWidget",
     "LatestTransactionsTable",
     "Logo",
     "MonthlySpendChart",
