@@ -1,0 +1,509 @@
+/* Monzo App v2 Styles */
+
+/* Global styles */
+Screen {
+    background: $surface;
+}
+
+.hidden {
+    display: none;
+}
+
+.loading {
+    opacity: 0.7;
+}
+
+.dimmed {
+    opacity: 0.5;
+}
+
+/* Modal styles */
+ModalScreen {
+    align: center middle;
+}
+
+.settings-modal {
+    width: 80;
+    height: 30;
+    border: thick $primary;
+    background: $surface;
+    border-title-style: bold;
+    border-title-color: $background;
+    border-title-background: $primary;
+    padding: 1;
+}
+
+.exclusions-modal {
+    width: 70;
+    height: 35;
+    border: thick $primary;
+    background: $surface;
+    border-title-style: bold;
+    border-title-color: $background;
+    border-title-background: $primary;
+    padding: 1;
+}
+
+.modal-title {
+    text-align: center;
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.modal-description {
+    text-align: center;
+    color: $text-disabled;
+    margin-bottom: 1;
+}
+
+/* Form styles */
+.settings-grid {
+    layout: grid;
+    grid-size: 2 6;
+    grid-columns: 1fr 1fr;
+    grid-rows: auto;
+    grid-gutter: 1;
+    margin-bottom: 1;
+}
+
+.section-label {
+    column-span: 2;
+    text-style: bold;
+    color: $accent;
+    margin-top: 1;
+    margin-bottom: 0;
+}
+
+.settings-input {
+    border: round $primary;
+    border-title-style: bold;
+    height: 3;
+    padding: 0 1;
+}
+
+.settings-select {
+    border: round $primary;
+    border-title-style: bold;
+    height: 3;
+}
+
+.button-bar {
+    layout: horizontal;
+    align: center middle;
+    height: 3;
+    margin-top: 1;
+}
+
+.modal-button {
+    margin: 0 1;
+    min-width: 15;
+}
+
+.validation-container {
+    height: auto;
+    margin-top: 1;
+}
+
+.validation-error {
+    color: $error;
+    text-style: bold;
+}
+
+/* Selection list styles */
+.selection-container {
+    height: 20;
+    border: round $primary;
+    margin: 1 0;
+}
+
+.category-list {
+    height: 100%;
+}
+
+.status-bar {
+    layout: horizontal;
+    height: 3;
+    align: center middle;
+}
+
+.status-label {
+    margin: 0 1;
+    color: $text-disabled;
+}
+
+.status-count {
+    margin-right: 2;
+    color: $accent;
+    text-style: bold;
+}
+
+/* Dashboard styles */
+.dashboard-container {
+    padding: 1;
+}
+
+.dashboard-grid {
+    layout: grid;
+    grid-size: 12 8;
+    grid-rows: 1fr;
+    grid-columns: 1fr;
+    grid-gutter: 1;
+    height: 100%;
+}
+
+/* Widget base styles */
+.card {
+    border: round $primary;
+    border-title-style: bold;
+    border-title-color: $primary;
+    background: $surface;
+    padding: 1;
+}
+
+.info-card {
+    border: round $accent;
+    border-title-style: bold;
+    border-title-color: $accent;
+    background: $panel;
+    padding: 1;
+}
+
+.table-widget {
+    border: round $primary;
+    border-title-style: bold;
+    border-title-color: $primary;
+    background: $surface;
+    padding: 1;
+}
+
+.chart-widget {
+    border: round $success;
+    border-title-style: bold;
+    border-title-color: $success;
+    background: $surface;
+    padding: 1;
+}
+
+.calendar-widget {
+    border: round $warning;
+    border-title-style: bold;
+    border-title-color: $warning;
+    background: $surface;
+    padding: 1;
+}
+
+/* Dashboard layout */
+.balance-widget {
+    column-span: 2;
+    row-span: 2;
+}
+
+.status-widget {
+    column-span: 2;
+    row-span: 2;
+}
+
+.settings-widget {
+    column-span: 2;
+    row-span: 2;
+}
+
+.monthly-chart {
+    column-span: 6;
+    row-span: 2;
+}
+
+.comparison-chart {
+    column-span: 4;
+    row-span: 3;
+}
+
+.payday-widget {
+    column-span: 2;
+    row-span: 3;
+}
+
+.categories-table {
+    column-span: 3;
+    row-span: 3;
+}
+
+.merchants-table {
+    column-span: 3;
+    row-span: 3;
+}
+
+.transactions-table {
+    column-span: 6;
+    row-span: 3;
+}
+
+.debug-widget {
+    column-span: 2;
+    row-span: 2;
+}
+
+.event-log {
+    column-span: 2;
+    row-span: 2;
+}
+
+/* Balance card specific */
+.balance-card {
+    layout: vertical;
+    align: center middle;
+}
+
+.balance-title {
+    text-align: center;
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.balance-amount {
+    text-align: center;
+    text-style: bold;
+    color: $success;
+    margin-bottom: 1;
+}
+
+.balance-info {
+    layout: vertical;
+    align: center middle;
+}
+
+.balance-status {
+    text-align: center;
+    color: $accent;
+}
+
+.balance-updated {
+    text-align: center;
+    color: $text-disabled;
+    text-style: italic;
+}
+
+/* Chart styles */
+.chart-container {
+    layout: vertical;
+    height: 100%;
+}
+
+.chart-title {
+    text-align: center;
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.chart-area {
+    layout: vertical;
+    align: center middle;
+    height: 60%;
+    border: dashed $primary;
+    margin-bottom: 1;
+}
+
+.chart-placeholder {
+    text-align: center;
+    color: $primary;
+}
+
+.chart-subtitle {
+    text-align: center;
+    color: $text-disabled;
+    text-style: italic;
+}
+
+.chart-data {
+    layout: vertical;
+    height: auto;
+}
+
+.data-label {
+    color: $text-disabled;
+    margin-right: 1;
+}
+
+.data-value {
+    color: $accent;
+    text-style: bold;
+}
+
+.category-item {
+    color: $text;
+    margin: 0;
+}
+
+.no-data {
+    text-align: center;
+    color: $text-disabled;
+    text-style: italic;
+}
+
+.error-text {
+    color: $error;
+    text-style: bold;
+}
+
+/* Calendar styles */
+.calendar-container {
+    layout: vertical;
+    align: center middle;
+}
+
+.calendar-info {
+    layout: vertical;
+    align: center middle;
+    margin-bottom: 1;
+}
+
+.calendar-placeholder {
+    text-align: center;
+    color: $warning;
+    margin: 1 0;
+}
+
+.calendar-subtitle {
+    text-align: center;
+    color: $text-disabled;
+    text-style: italic;
+}
+
+/* Table styles */
+.table-container {
+    layout: vertical;
+    height: 100%;
+}
+
+.table-title {
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.table-header {
+    layout: horizontal;
+    height: auto;
+    margin-bottom: 1;
+}
+
+.header-label {
+    color: $text-disabled;
+    margin-right: 1;
+}
+
+.exclusion-count {
+    color: $warning;
+    text-style: bold;
+}
+
+.transaction-count {
+    color: $accent;
+    text-style: bold;
+}
+
+.data-table {
+    height: 100%;
+}
+
+.loading-text {
+    text-align: center;
+    color: $primary;
+    text-style: italic;
+}
+
+/* Status card styles */
+.status-card {
+    layout: vertical;
+}
+
+.card-title {
+    text-align: center;
+    text-style: bold;
+    color: $primary;
+    margin-bottom: 1;
+}
+
+.status-info, .settings-info, .system-info {
+    layout: vertical;
+}
+
+.status-row {
+    layout: horizontal;
+    height: 1;
+    margin-bottom: 1;
+}
+
+.status-label {
+    width: 12;
+    color: $text-disabled;
+}
+
+.status-value {
+    color: $accent;
+    text-style: bold;
+}
+
+/* Event log styles */
+.event-log {
+    layout: vertical;
+}
+
+.no-events {
+    text-align: center;
+    color: $text-disabled;
+    text-style: italic;
+}
+
+.event-item {
+    color: $text;
+    margin: 0;
+}
+
+/* Reactive label styles */
+ReactiveLabel {
+    height: auto;
+}
+
+StateLabel {
+    height: auto;
+}
+
+/* Loading and error states */
+.loading StateLabel {
+    color: $text-disabled;
+}
+
+.error StateLabel {
+    color: $error;
+}
+
+/* Responsive adjustments - removed for now due to Textual CSS limitations */
+
+/* Focus and selection styles */
+*:focus {
+    border: thick $accent;
+}
+
+SelectionList:focus {
+    border: thick $primary;
+}
+
+DataTable:focus {
+    border: thick $primary;
+}
+
+Input:focus {
+    border: thick $accent;
+}
+
+Select:focus {
+    border: thick $accent;
+}
+
+Button:focus {
+    text-style: bold reverse;
+}
