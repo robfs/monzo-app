@@ -1,0 +1,9 @@
+ReactiveLabel {
+    text-style: dim italic;
+}
+
+.loading-label {
+    text-style: bold;
+    color: $primary;
+    background: $primary-background;
+}
